@@ -35,7 +35,6 @@ with mp_pose.Pose(
     bg_image = np.zeros(image.shape, dtype=np.uint8)
     bg_image[:] = BG_COLOR
     annotated_image = np.where(condition, annotated_image, bg_image)
-    print(np)
     # Draw pose landmarks on the image.
     mp_drawing.draw_landmarks(
         annotated_image,
