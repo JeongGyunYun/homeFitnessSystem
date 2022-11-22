@@ -1,3 +1,5 @@
+from enum import IntEnum
+
 from solutions import PoseLandmark
 from math import atan2, pi
 
@@ -13,7 +15,9 @@ def get_angel(firstLandmark: PoseLandmark, midLandmark: PoseLandmark, lastlandma
     return degree
 
 
-def get_angel_from_symbol(results, firstLandmark: PoseLandmark, midLandmark: PoseLandmark, lastLandmark:PoseLandmark):
+def get_angel_from_symbol(results, firstLandmark, midLandmark, lastLandmark):
+  degree = None
+  if results.pose_landmarks:
     firstPoint = results.pose_landmarks.landmark[firstLandmark]
     midPoint = results.pose_landmarks.landmark[midLandmark]
     lastPoint =results.pose_landmarks.landmark[lastLandmark]
@@ -26,4 +30,4 @@ def get_angel_from_symbol(results, firstLandmark: PoseLandmark, midLandmark: Pos
     degree = abs(radian * 180.0 / pi)
     if degree > 180.0:
         degree = 360.0 - degree
-    return degree
+  return degree

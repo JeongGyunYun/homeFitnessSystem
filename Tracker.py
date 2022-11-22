@@ -1,6 +1,8 @@
 import cv2
 import mediapipe as mp
 from mediapipe.python.solutions.drawing_utils import DrawingSpec
+import util
+from solutions import PoseLandmark
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -12,6 +14,7 @@ RED_COLOR = (0, 0, 255)
 GREEN_COLOR = (0, 128, 0)
 BLUE_COLOR = (255, 0, 0)
 
+
 class Tracker:
   def __init__(self, win_name, dev_info=0, path=""):
     self.pose = mp_pose.Pose(
@@ -22,35 +25,66 @@ class Tracker:
     self.win_name = win_name
 
   def read(self):
-    return self.cap.read()
-
+    self.success, self.image = self.cap.read()
+    return self.success, self.image
 
   def is_cap_open(self):
     return self.cap.isOpened()
 
-  def get_pose_results(self, image):
-    image.flags.writeable = False
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    results = self.pose.process(image)
-    return results
+  def get_pose_results(self, image=None):
+    if image == None:
+      image = self.image
 
-  def draw_annotation(self, image, results, landmark_list, connections,
-                      landmark_drawing_spec=DrawingSpec(color=RED_COLOR), connection_drawing_spec=DrawingSpec()):
-    image.flags.writeable = True
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    image.flags.writeable = False
+    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = self.pose.process(image)
+    self.results = results
+    return self.results
+
+  def draw_annotation(self, landmark_list, connections,
+                      landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(), connection_drawing_spec=DrawingSpec()):
+
+    self.image.flags.writeable = True
+    # self.image = cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
     mp_drawing.draw_landmarks(
-      image,
-      landmark_list=results.pose_landmarks,
-      connections=mp_pose.POSE_CONNECTIONS,
-      landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
+      self.image,
+      landmark_list=landmark_list,
+      connections=connections,
+      landmark_drawing_spec=landmark_drawing_spec,
       connection_drawing_spec=connection_drawing_spec
     )
-    return image
+    return self.image
 
-  def show(self, image):
+  def show(self, image=None):
+    if image == None:
+      image = self.image
     cv2.imshow(self.win_name, cv2.flip(image, 1))
     if cv2.waitKey(5) & 0xFF == 27:
       None
+
+  def get_right_elbow_angle(self, results=None):
+    if results == None:
+      results = self.results
+    angle = util.get_angel_from_symbol(results, PoseLandmark.RIGHT_SHOULDER, PoseLandmark.RIGHT_ELBOW,
+                               PoseLandmark.RIGHT_WRIST)
+    return angle
+
+  def get_left_elbow_angle(self, results=None):
+    if results == None:
+      results = self.results
+    angle = util.get_angel_from_symbol(results, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_ELBOW,
+                               PoseLandmark.LEFT_WRIST)
+    return angle
+
+  def get_right_shoulder_angle(self):
+    angle = util.get_angel_from_symbol(self.results, PoseLandmark.RIGHT_ELBOW, PoseLandmark.RIGHT_SHOULDER,
+                               PoseLandmark.RIGHT_HIP)
+    return angle
+
+  def get_left_shoulder_angle(self):
+    angle = util.get_angel_from_symbol(self.results, PoseLandmark.LEFT_ELBOW,PoseLandmark.LEFT_SHOULDER,
+                               PoseLandmark.LEFT_HIP)
+    return angle
 
   def pose_close(self):
     self.pose.close()
