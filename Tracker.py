@@ -28,6 +28,10 @@ class Tracker:
     self.success, self.image = self.cap.read()
     return self.success, self.image
 
+  def read_image(self):
+    self.success, self.image = self.cap.read()
+    return self.image
+
   def is_cap_open(self):
     return self.cap.isOpened()
 
