@@ -1,6 +1,7 @@
 from util import get_angel
 import numpy as np
 
+
 class PoseConfidence:
 
   def __init__(self):
@@ -40,8 +41,7 @@ class PoseConfidence:
 
     return True
 
-
-  def pushup_position_check(self,ls, rs, le, re, lw, rw, lh, rh):
+  def pushup_position_check(self, ls, rs, le, re, lw, rw, lh, rh):
     # 양쪽 엉덩이 카메라 평행 맞추기
     if -self.check > lh[2] or lh[2] > self.check or -self.check > rh[2] or rh[2] > self.check:
       self.wrong.append((23, 24))
@@ -63,7 +63,7 @@ class PoseConfidence:
     # 엉덩이 높이
     return self.wrong
 
-  def pushup_calculate_angle(self, a:np.array, b:np.array, c:np.array):
+  def pushup_calculate_angle(self, a: np.array, b: np.array, c: np.array):
     a = np.array(a)  # First
     b = np.array(b)  # Mid
     c = np.array(c)  # End
@@ -75,7 +75,6 @@ class PoseConfidence:
       angle = 360 - angle
 
     return angle
-
 
   def calc_pushup_count(self, angle):
     if angle < 180 and self.stage == None:
@@ -89,11 +88,6 @@ class PoseConfidence:
   def set_wrong_connection_list(self, wrong_list):
     self.worng = wrong_list
 
-  #TODO 단순히 self.wrong을 return 하지 않고 계산으로 처리하기/
+  # TODO 단순히 self.wrong을 return 하지 않고 계산으로 처리하기/
   def get_wrong_connection_list(self):
     return self.wrong
-
-
-
-
-

@@ -3,6 +3,7 @@ from Annotation import Annotation
 from solutions import PoseConnection
 from PoseConfidence import PoseConfidence
 import mediapipe as mp
+from util import *
 
 mp_pose = mp.solutions.pose
 
@@ -102,40 +103,41 @@ if __name__ == "__main__":
     connection_style = annotation.make_connection_style_from_result()
 
     # Extract landmarks
-    try:
-      landmarks = results.pose_landmarks.landmark
+    if results.pose_landmarks:
       # print(landmarks)
 
       # Get coordinates
-      left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
-                       landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y,
-                       landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].z]
-      left_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
-                    landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y,
-                    landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].z]
-      left_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,
-                    landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y,
-                    landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].z]
-      right_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
-                        landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y,
-                        landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z]
-      right_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
-                     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y,
-                     landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].z]
-      right_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
-                     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y,
-                     landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].z]
-      left_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,
-                  landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].z]
-      right_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,
-                   landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].z]
-      elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-
-      # print(left_shoulder, right_shoulder)
-      # print(left_elbow, right_elbow)
-      # print(left_wrist, right_wrist)
-      # print(left_hip, right_hip)
-      # print()
+      # left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
+      #                  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y,
+      #                  landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].z]
+      # left_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
+      #               landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y,
+      #               landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].z]
+      # left_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,
+      #               landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y,
+      #               landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].z]
+      # right_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
+      #                   landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y,
+      #                   landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].z]
+      # right_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
+      #                landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y,
+      #                landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].z]
+      # right_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
+      #                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y,
+      #                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].z]
+      # left_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,
+      #             landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].z]
+      # right_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,
+      #              landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].z]
+      # elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+      left_shoulder = convert_landmark_to_array(results, PoseLandmark.LEFT_SHOULDER)
+      left_elbow = convert_landmark_to_array(results, PoseLandmark.LEFT_ELBOW)
+      left_wrist = convert_landmark_to_array(results, PoseLandmark.LEFT_WRIST)
+      right_shoulder = convert_landmark_to_array(results, PoseLandmark.RIGHT_SHOULDER)
+      right_elbow = convert_landmark_to_array(results, PoseLandmark.RIGHT_ELBOW)
+      right_wrist = convert_landmark_to_array(results, PoseLandmark.RIGHT_WRIST)
+      left_hip = convert_landmark_to_array(results, PoseLandmark.LEFT_HIP)
+      right_hip = convert_landmark_to_array(results, PoseLandmark.RIGHT_HIP)
 
       if not poseConfidence.flag:
         poseConfidence.flag = poseConfidence.pushup_preposition_check(left_shoulder, right_shoulder, left_elbow,
@@ -150,30 +152,21 @@ if __name__ == "__main__":
           poseConfidence.pushup_position_check(left_shoulder, right_shoulder, left_elbow, right_elbow, left_wrist,
                                                right_elbow,
                                                left_hip, right_hip))
-        # Visualize angle
-        # cv2.putText(image, str(angle),
-        #               tuple(np.multiply(elbow, [640, 480]).astype(int)),
-        #               cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
-        #                     )
 
         # Curl counter logic
         poseConfidence.calc_pushup_count(angle)
         print("True")
-    except:
-      pass
-
-    #
+    ##Test Code
     # #TestCode 임의로 주어진 result 값
     # if webcam.get_right_shoulder_angle():
     #   if webcam.get_right_shoulder_angle() > 90:
     #     annotation.make_connection_style_from_result([PoseConnection.RIGHT_SHOULDER_TO_RIGHT_ELBOW])
 
-    if results.pose_landmarks:
       annotation.make_connection_style_from_result(poseConfidence.get_wrong_connection_list())
 
     webcam.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections,
                            connection_drawing_spec=connection_style)
-    # print(f'left  elbow angle{webcam.get_left_shoulder_angle()}  right elbow angle{webcam.get_right_shoulder_angle()}')
+
     webcam.show()
 
   webcam.pose_close()

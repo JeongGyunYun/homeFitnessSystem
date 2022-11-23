@@ -31,3 +31,10 @@ def get_angel_from_symbol(results, firstLandmark, midLandmark, lastLandmark):
     if degree > 180.0:
         degree = 360.0 - degree
   return degree
+
+def convert_landmark_to_array(results, poseLandmarkIdx):
+    if not results.pose_landmarks:
+      return None
+    result = results.pose_landmarks.landmark
+    return [result[poseLandmarkIdx].x, result[poseLandmarkIdx].y, result[poseLandmarkIdx].z]
+
