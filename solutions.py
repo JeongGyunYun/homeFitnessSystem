@@ -1,5 +1,4 @@
 import enum
-
 class PoseLandmark(enum.IntEnum):
     """The 33 pose landmarks."""
     NOSE = 0

@@ -88,6 +88,7 @@ with mp_pose.Pose(
         min_tracking_confidence=0.5) as pose:
   while cap.isOpened():
       success, image = cap.read()
+      wrong = []
       if not success:
           print("Ignoring empty camera frame.")
           # If loading a video, use 'break' instead of 'continue'.
@@ -162,7 +163,16 @@ with mp_pose.Pose(
       except:
           pass
         
+      # print(wrong)
       # ready message
+      
+      # Render detections
+      mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                              mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), 
+                              mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
+                                )   
+      image =  cv2.flip(image, 1)
+      
       cv2.putText(image, ready, (240, 30),
                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2, cv2.LINE_AA)
 
@@ -184,11 +194,7 @@ with mp_pose.Pose(
                   (60, 60),
                   cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
 
-      # Render detections
-      mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                              mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), 
-                              mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
-                                )   
+
       
       # Flip the image horizontally for a selfie-view display.
       cv2.imshow('MediaPipe Pose', image)
