@@ -354,4 +354,8 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+### Flask ###
+instance/*
+!instance/.gitignore
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,pycharm,python,visualstudiocode,windows
