@@ -2,6 +2,9 @@ from flask import Flask, Response, render_template
 import cv2
 import threading
 
+from Annotation import Annotation
+from Tracker import Tracker
+
 temp = None
 count = 1
 
@@ -13,25 +16,29 @@ def index():
   return render_template("index.html")
 
 
-def gen(dev):
-  if dev == '0':
-    dev = 0
+def gen(dev_info):
+  annotation = Annotation()
+  if dev_info == '0':
+    dev_info = 0
   else:
-    dev = f"./samples/{dev}"
-  print(dev)
-  video = cv2.VideoCapture(dev)
+    dev_info = f"./samples/{dev_info}"
+  print(dev_info)
+  dev = Tracker(dev_info)
   while True:
-    success, image = video.read()
+    success, image = dev.read()
     if not success:
       break
-    ret, jpeg = cv2.imencode('.jpg', image)
+    results = dev.get_pose_results()
+    annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections)
+
+    ret, jpeg = cv2.imencode('.jpg', annotation_img)
     frame = jpeg.tobytes()
     yield (b'--frame\r\n'
            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-
 @app.route('/video_feed/<string:dev>')
 def video_feed(dev):
+  print(f"video_feed run")
   return Response(gen(dev),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
 

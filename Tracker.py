@@ -16,12 +16,14 @@ BLUE_COLOR = (255, 0, 0)
 
 
 class Tracker:
-  def __init__(self, win_name=" ", dev_info=0):
+  def __init__(self, dev_info, win_name=" "):
     self.pose = mp_pose.Pose(
       min_detection_confidence=0.5,
       min_tracking_confidence=0.5
     )
-    self.cap = cv2.VideoCapture(dev_info)
+    self.dev_info = dev_info
+    self.cap = cv2.VideoCapture(self.dev_info)
+    print(f"Tracker Device name = {self.dev_info} ")
     self.win_name = win_name
 
   def get_window_name(self):
