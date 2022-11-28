@@ -45,13 +45,14 @@ class Tracker:
       image = self.image
 
     image.flags.writeable = False
-    # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = self.pose.process(image)
     self.results = results
     return self.results
 
   def draw_annotation(self, landmark_list, connections,
-                      landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(), connection_drawing_spec=DrawingSpec()):
+                      landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
+                      connection_drawing_spec=DrawingSpec()):
 
     self.image.flags.writeable = True
     # self.image = cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR)
@@ -62,6 +63,8 @@ class Tracker:
       landmark_drawing_spec=landmark_drawing_spec,
       connection_drawing_spec=connection_drawing_spec
     )
+    self.image = cv2.flip(self.image, 1)
+
     return self.image
 
   def show(self, image=None):
@@ -74,24 +77,24 @@ class Tracker:
     if results == None:
       results = self.results
     angle = util.get_angel_from_symbol(results, PoseLandmark.RIGHT_SHOULDER, PoseLandmark.RIGHT_ELBOW,
-                               PoseLandmark.RIGHT_WRIST)
+                                       PoseLandmark.RIGHT_WRIST)
     return angle
 
   def get_left_elbow_angle(self, results=None):
     if results == None:
       results = self.results
     angle = util.get_angel_from_symbol(results, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_ELBOW,
-                               PoseLandmark.LEFT_WRIST)
+                                       PoseLandmark.LEFT_WRIST)
     return angle
 
   def get_right_shoulder_angle(self):
     angle = util.get_angel_from_symbol(self.results, PoseLandmark.RIGHT_ELBOW, PoseLandmark.RIGHT_SHOULDER,
-                               PoseLandmark.RIGHT_HIP)
+                                       PoseLandmark.RIGHT_HIP)
     return angle
 
   def get_left_shoulder_angle(self):
-    angle = util.get_angel_from_symbol(self.results, PoseLandmark.LEFT_ELBOW,PoseLandmark.LEFT_SHOULDER,
-                               PoseLandmark.LEFT_HIP)
+    angle = util.get_angel_from_symbol(self.results, PoseLandmark.LEFT_ELBOW, PoseLandmark.LEFT_SHOULDER,
+                                       PoseLandmark.LEFT_HIP)
     return angle
 
   def pose_close(self):
