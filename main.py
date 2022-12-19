@@ -3,6 +3,7 @@ from datetime import timedelta
 from flask import Flask, Response, render_template, session, jsonify
 from middleware import *
 from UserManage import UserManage
+from ViedoController import VideoController
 from User import User
 
 app = Flask(__name__)
@@ -50,12 +51,26 @@ def camera_feed():
   return Response(generate_cam(),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/req/stop')
+def video_stop():
+  username = session['username']
+  controller:VideoController = UserManage.get_User_from_username(username).get_controller()
+  controller.stop_video()
+  return f"{controller.get_control_flag()}"
 
-@app.before_request
-def make_session_permanent():
-  session.permanent = True
-  app.permanent_session_lifetime = timedelta(minutes=3)
-  #TODO session 자동삭제시 Manage에서 자동 삭제필요
+@app.route("/req/play")
+def video_play():
+  username = session['username']
+  controller:VideoController = UserManage.get_User_from_username(username).get_controller()
+  controller.play_video()
+  return f"{controller.get_control_flag()}"
+
+
+# @app.before_request
+# def make_session_permanent():
+#   session.permanent = True
+#   app.permanent_session_lifetime = timedelta(minutes=3)
+#   #TODO session 자동삭제시 Manage에서 자동 삭제필요
   
 
 if __name__ == '__main__':

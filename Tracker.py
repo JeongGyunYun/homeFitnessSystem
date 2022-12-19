@@ -23,7 +23,7 @@ class Tracker:
     )
     self.dev_info = dev_info
     self.cap = cv2.VideoCapture(self.dev_info)
-    print(f"Tracker Device name = {self.dev_info} ")
+    print(f"[Log Dev:{self.dev_info}]Tracker is initalized")
     self.win_name = win_name
 
   def get_window_name(self):

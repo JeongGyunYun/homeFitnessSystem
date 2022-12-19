@@ -24,10 +24,10 @@ class VideoController:
     self.load_on_frame()
     return (self.get_status(), self.get_frame())
 
-  def play_load_frame(self):
+  def play_video(self):
     self.control_flag = True
 
-  def stop_load_frame(self):
+  def stop_video(self):
     self.control_flag = False
 
   def get_frame(self):
