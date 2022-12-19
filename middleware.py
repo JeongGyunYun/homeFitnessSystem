@@ -9,7 +9,7 @@ def generate_data(user:User):
   yield str(user.get_count())
 
 control_flag = True
-pose_flag = False
+flag = False
 checkNum = 0
 train = 0
 # 0: pushup 1: squat
@@ -24,7 +24,8 @@ def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
   dev = tracker
   dev.capture_start()
   poseChecker = poseChecker
-
+  global checkNum
+  global flag
   while True:
     success, image, _ = dev.read()
     if not success:

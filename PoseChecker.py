@@ -223,7 +223,7 @@ class PoseChecker:
     return (cam_angel, vid_angel)
 
   def pushup_preposition_check(self, checkNum) -> bool:
-    landmarks = self.tracker.get_result().pose_landmarks.landmark
+    landmarks = self.tracker.get_result().pose_landmarks
     LeftShoulder = [landmarks[PoseLandmark.LEFT_SHOULDER].x,
                     landmarks[PoseLandmark.LEFT_SHOULDER].y, landmarks[PoseLandmark.LEFT_SHOULDER].z]
     LeftElbow = [landmarks[PoseLandmark.LEFT_ELBOW].x,
