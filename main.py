@@ -32,10 +32,27 @@ def clear_session():
     session.pop('username', None)
   return jsonify("No Session Now")
 
+@app.route('/pre_pushup')
+def pre_pushup():
+    return render_template('pre_pushup.html')
+  
+@app.route('/pre_squat')
+def pre_squat():
+    return render_template('pre_squat.html')
+  
+@app.route('/pushup/<count>')
+def pushup(count):
+    return render_template('pushup.html', count)
+
+@app.route('/squat/<count>')
+def squat(count):
+    return render_template('squat.html', count)
 
 @app.route('/home')
-def index():
-  return render_template("index.html")
+#def index():
+  #return render_template("index.html")
+def main():
+  return render_template("main.html")
 
 
 @app.route('/video_feed/<string:filename>/<int:count>')

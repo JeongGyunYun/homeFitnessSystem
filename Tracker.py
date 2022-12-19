@@ -31,6 +31,9 @@ class Tracker:
   def clear_property(self):
     None
 
+  def get_window_name(self):
+    return self.win_name
+
   def read(self):
     self.success, self.image = self.cap.read()
     current_frame_num = int(self.cap.get(1))
