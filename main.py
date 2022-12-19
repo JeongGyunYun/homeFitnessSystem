@@ -1,47 +1,56 @@
-from flask import Flask, Response, render_template
-import cv2
-import threading
+from datetime import timedelta
 
-from Annotation import Annotation
-from Tracker import Tracker
-
-temp = None
-count = 1
+from flask import Flask, Response, render_template, session, jsonify
+from middleware import *
+from UserManage import UserManage
 
 app = Flask(__name__)
+app.secret_key = "Hello World"
+user_manage = UserManage()
 
 
-@app.route('/')
+@app.route("/")
+def check_session():
+  if "username" in session:
+    return jsonify(f"Name is {session['username']}")
+  else:
+    return jsonify(f"Who are U?")
+
+@app.route("/set/<value>")
+def set_session(value):
+  session['username'] = value
+  return jsonify(f"Set Name is {session['username']}")
+
+@app.route("/clear")
+def clear_session():
+  if 'username' in session:
+    session.pop('username', None)
+  return jsonify("No Session Now")
+
+
+@app.route('/home')
 def index():
   return render_template("index.html")
 
 
-def gen(dev_info):
-  annotation = Annotation()
-  if dev_info == '0':
-    dev_info = 0
-  else:
-    dev_info = f"./samples/{dev_info}"
-  print(dev_info)
-  dev = Tracker(dev_info)
-  while True:
-    success, image = dev.read()
-    if not success:
-      break
-    results = dev.get_pose_results()
-    annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections)
-
-    ret, jpeg = cv2.imencode('.jpg', annotation_img)
-    frame = jpeg.tobytes()
-    yield (b'--frame\r\n'
-           b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
-
-@app.route('/video_feed/<string:dev>')
-def video_feed(dev):
-  print(f"video_feed run")
-  return Response(gen(dev),
+@app.route('/video_feed/<string:filename>')
+def video_feed(filename):
+  return Response(generate_video(filename),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
 
+
+@app.route('/video_feed/camera')
+def camera_feed():
+  return Response(generate_cam(),
+                  mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.before_request
+def make_session_permanent():
+  session.permanent = True
+  app.permanent_session_lifetime = timedelta(minutes=3)
+  #TODO session 자동삭제시 Manage에서 자동 삭제필요
+  
 
 if __name__ == '__main__':
   app.run(host='127.0.0.1', port=2204, threaded=True)
