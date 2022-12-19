@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from flask import Flask, Response, render_template, session, jsonify
+from flask import Flask, Response, render_template, session, jsonify, request, redirect, url_for
 from middleware import *
 from UserManage import UserManage
 from ViedoController import VideoController
@@ -10,14 +10,18 @@ app = Flask(__name__)
 app.secret_key = "Hello World"
 
 #Code for Test
-UserManage.add_user("Hello", User(user="Hello"), Tracker(0))
+# UserManage.add_user("Hello", User(user="Hello"), Tracker(0))
 
 @app.route("/")
 def check_session():
-  if "username" in session:
-    return jsonify(f"Name is {session['username']}")
-  else:
-    return jsonify(f"Who are U?")
+  value = "hello"
+  session['username'] = value
+  UserManage.add_user(value, User(value), Tracker(dev_info=0))
+  return redirect(url_for('main'))
+  # if "username" in session:
+  #   return jsonify(f"Name is {session['username']}")
+  # else:
+  #   return jsonify(f"Who are U?")
 
 @app.route("/set/<value>")
 def set_session(value):
@@ -34,10 +38,16 @@ def clear_session():
 
 @app.route('/pre_pushup')
 def pre_pushup():
+    username = session['username']
+    user = UserManage.get_User_from_username(username)
+    user.set_train_push_up()
     return render_template('pre_pushup.html')
   
 @app.route('/pre_squat')
 def pre_squat():
+    username = session['username']
+    user = UserManage.get_User_from_username(username)
+    user.set_train_squat()
     return render_template('pre_squat.html')
   
 @app.route('/pushup', methods=['GET', 'POST'])
@@ -45,20 +55,32 @@ def pushup():
     if request.method == 'POST':
       count = request.form['reps']
       print(count)
-    return render_template('pushup.html', value = count)
+    return render_template('pushup.html', value=count)
+
 
 @app.route('/squat', methods=['GET', 'POST'])
 def squat():
-    if request.method == 'POST':
-      count = request.form['reps']
-      print(count)
-    return render_template('squat.html', value = count)
+  if request.method == 'POST':
+    count = request.form['reps']
+    print(count)
+  return render_template('squat.html', value=count)
+
 
 @app.route('/home')
-def index():
-  return render_template("index.html")
-# def main():
-#   return render_template("main.html")
+# def index():
+#   return render_template("index.html")
+def main():
+  username = session['username']
+  user = UserManage.get_User_from_username(username)
+  user.clear_count()
+  return render_template("main.html")
+
+
+@app.route('/data_feed')
+def data_feed():
+  username = session['username']
+  user = UserManage.get_User_from_username(username)
+  return Response(generate_data(user), mimetype='text')
 
 
 @app.route('/video_feed/<string:filename>/<int:count>')
@@ -67,7 +89,7 @@ def video_feed(filename, count):
   user = UserManage.get_User_from_username(username)
   user.get_controller().set_max_loop_count(count)
   postChecker = UserManage.get_PoseChecker_from_username(username)
-  return Response(generate_video(user=user,posechecker=postChecker, filename=filename),
+  return Response(generate_video(user=user, posechecker=postChecker, filename=filename),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
 
 

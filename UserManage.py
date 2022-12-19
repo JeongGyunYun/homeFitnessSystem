@@ -8,7 +8,7 @@ user_list = dict()
 class UserManage:
   @staticmethod
   def add_user(username:str, userType:User, trackerType:Tracker):
-    checker = PoseChecker(trackerType, userType.get_controller())
+    checker = PoseChecker(trackerType, userType)
     user_list[username] = [userType, trackerType, checker]
 
   @staticmethod

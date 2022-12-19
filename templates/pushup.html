@@ -20,12 +20,22 @@
         <div class="bar"></div>
         <div class="num" id="count">0</div>
       </div>
-      <img class="my_video" src="{{ url_for('video_feed', dev='0')}}">
-      <video class="sample_video" controls loop>
-        <source src="/static/samples/push-up1.mp4">
-      </video>
+      <img class="my_video" src="{{ url_for('camera_feed')}}">
+      <img class="sample_video" src="{{ url_for('video_feed', filename='sam2.mp4', count=25)}}" width="50%">
     </div>
     <div class="tail"></div>
 </div>
 </body>
+<script>
+  var count = document.getElementById("count");
+  setInterval(() => {
+        fetch("{{ url_for('data_feed') }}")
+            .then(response => {
+                response.text().then(data => {
+                    count.innerText = data
+                });
+            })
+    }, 1500);
+
+</script>
 </html>

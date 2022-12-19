@@ -5,7 +5,9 @@ from User import User
 import cv2
 import util
 
-control_flag = True
+def generate_data(user:User):
+  yield str(user.get_count())
+
 
 def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
   """
@@ -24,7 +26,10 @@ def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
       break
     results = dev.get_pose_results()
     # TODO 여기서 Cam 한프레임마다 영상 Frame을 비교하여 동영상을 제어
-    poseChecker.shoudler_checker()
+    # poseChecker.shoudler_checker()
+    # poseChecker.elbow_checker()
+    poseChecker.count_up()
+
     line_set = poseChecker.get_wrong_line()
 
     annotation.make_connection_style_from_results(line_set)

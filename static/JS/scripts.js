@@ -18,7 +18,6 @@ $(function (){
   var clear = setInterval(function(){
     bars.each(function(){
       num = count.text()
-      num = parseInt(num) + 1
       if(num <= goal){
         count.text(num)
         $(this).css({
@@ -35,6 +34,6 @@ $(function (){
 
   $("#clear").click(function(){
     //Some code
-    $(location).attr("href", "/");
+    $(location).attr("href", "/home");
   });
 });

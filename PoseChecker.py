@@ -1,26 +1,33 @@
-import json
-
 from ViedoController import VideoController
 from Tracker import Tracker
+from User import User
 from solutions import PoseLandmark
 from solutions import PoseConnection
 import util
 
 
 class PoseChecker:
-  def __init__(self, tracker, controller):
+  def __init__(self, tracker, user):
+    self.user: User = user
     self.tracker: Tracker = tracker
-    self.controller: VideoController = controller
+    self.controller: VideoController = user.get_controller()
     self.wrong_line = set()
+    self.squat_state = None
 
-  @staticmethod
-  def test(tracker: Tracker, controller: VideoController):
-    # TODO 값이 None일 때 처리해야
-    if tracker.get_right_elbow_angle():
-      if (tracker.get_right_elbow_angle() > 90):
-        controller.stop_video()
-      else:
-        controller.play_video()
+  def count_up(self):
+    global cam_angel
+    cam_landmark_results = self.tracker.get_result()
+    if cam_landmark_results:
+      cam_angel = util.get_angel_from_symbol(cam_landmark_results, PoseLandmark.RIGHT_HIP,
+                                             PoseLandmark.RIGHT_SHOULDER,
+                                             PoseLandmark.RIGHT_ELBOW)
+    if cam_angel is not None and cam_angel > 90:
+      cur_count = self.user.get_count()
+      self.user.set_count(cur_count + 1)
+
+
+  # def square_check(self):
+  #
 
   def set_json_data(self):
     self.json_data = util.json_load(self.controller.get_video_name_without_ex())
@@ -37,7 +44,6 @@ class PoseChecker:
 #어깨 영역
   def shoudler_checker(self):
     MAX_ANGLE = 25
-    # TODO 어깨인데 잘못 넣어음
     right_shoulder_status = self.right_shoulder_checker(MAX_ANGLE)
     left_shoulder_status = self.left_shoulder_checker(MAX_ANGLE)
     if right_shoulder_status and left_shoulder_status:
@@ -47,11 +53,11 @@ class PoseChecker:
       # Log을 위한 부분
       if not right_shoulder_status:
         self.add_wrong_line(PoseConnection.RIGHT_SHOULDER_TO_RIGHT_ELBOW)
-        self.add_wrong_line(PoseConnection.RIGHT_ELBOW_TO_RIGHT_WRIST)
+        self.add_wrong_line(PoseConnection.RIGHT_SHOULDER_TO_RIGHT_HIP)
         print("[Log] right problem")
       if not left_shoulder_status:
         self.add_wrong_line(PoseConnection.LEFT_SHOULDER_TO_LEFT_ELBOW)
-        self.add_wrong_line(PoseConnection.LEFT_ELBOW_TO_LEFT_WRIST)
+        self.add_wrong_line(PoseConnection.LEFT_SHOULDER_TO_LEFT_HIP)
         print("[Log] left problem")
       # TODO 실제 구현 True False로 구현
       self.controller.stop_video()
