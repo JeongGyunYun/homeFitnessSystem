@@ -38,10 +38,11 @@ def index():
   return render_template("index.html")
 
 
-@app.route('/video_feed/<string:filename>')
-def video_feed(filename):
+@app.route('/video_feed/<string:filename>/<int:count>')
+def video_feed(filename, count):
   username = session['username']
   user = UserManage.get_User_from_username(username)
+  user.get_controller().set_max_loop_count(count)
   return Response(generate_video(user=user, filename=filename),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
 

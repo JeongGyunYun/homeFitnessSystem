@@ -49,10 +49,15 @@ def generate_video(user: User, filename:str, path:str= "./static/samples/"):
 
   #flag에 따라 동영상을 제어하는 영역
   while controller.get_status():
-    if controller.get_control_flag(): # flag가 true
-      controller.load_on_frame() #새로운 frame을 읽음
+    if controller.get_control_flag():  # flag가 true
+      controller.load_on_frame()  # 새로운 frame을 읽음
     if not controller.get_status():
-      break
+      if controller.is_end_loop():
+        break
+      else:
+        controller.count_loop()
+        controller.set_frame_to_start()
+        controller.load_on_frame()
     frame = controller.get_frame()
     byte_image = controller.get_byte_image(frame)
     yield (b'--frame\r\n'

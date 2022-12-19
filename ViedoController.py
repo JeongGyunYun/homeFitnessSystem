@@ -3,6 +3,7 @@ import cv2
 class VideoController:
   def __init__(self):
     self.control_flag:bool = True
+    self.max_loop_count = 1
 
   def set_video(self, video):
     """
@@ -11,6 +12,21 @@ class VideoController:
     self.video: str = video
     self.cap = cv2.VideoCapture(self.video)
     self.clear_property()
+
+  def set_max_loop_count(self, n):
+    self.max_loop_count = n
+    self.cur_loop_count = 1
+
+  def set_frame_to_start(self):
+    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
+  def count_loop(self):
+    self.cur_loop_count += 1
+
+  def is_end_loop(self) -> bool:
+    if self.cur_loop_count >= self.max_loop_count:
+      return True
+    return False
 
   def clear_property(self):
     self.status = None
