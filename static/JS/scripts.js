@@ -1,14 +1,21 @@
-$(document).ready(function (){
+$(function (){
+  console.log("##########");
+
   var count = $("#count");
   var num;
   var goal = $("#goal").text();
   var bars = $(".bar");
+
+  console.log(count);
+  console.log(goal);
+  
   bars.each(function(i,el){
     $(this).css({
       height : 0 + "%"
     });
   });
-  setInterval(function(){
+  
+  var clear = setInterval(function(){
     bars.each(function(){
       num = count.text()
       num = parseInt(num) + 1
@@ -18,7 +25,16 @@ $(document).ready(function (){
           height : num / goal * 100 + "%"
         })
       }
+      else{
+        clearInterval(clear);
+        $("#clear").css('visibility', 'visible');
+        $('.sample_video').trigger('pause');
+      }
     })
-  }, 300);
+  }, 500);
 
-}())
+  $("#clear").click(function(){
+    //Some code
+    $(location).attr("href", "/");
+  });
+});

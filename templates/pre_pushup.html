@@ -4,13 +4,15 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Multiple Live Streaming</title>
+  <link rel="stylesheet" href="{{url_for('static', filename='CSS/styles.css')}}">
+  <title>Home Fitness Training System</title>
 </head>
 <body>
   <div class="mobile-contaier">
       <div class="head"></div>
       <div class="oEUMCt"></div>
       <div class="mobile-view-main">
+        <div id="clear">CLEAR</div>
         <div id="title">Do it! Push-Up</div>
         <ol>
           <li>엎드려서 양팔을 어깨너비보다 조금 더 넓게 위치시킨다.</li>
@@ -19,11 +21,11 @@
           <li>가슴을 모아주는 느낌으로 팔을 편다.</li>
          </ol>
         <p id="tip">TIP. 엉덩이가 낮아지거나 높아지지 않고 반듯한 상태로 진행.</p>
-        <div id ="select">
+        <form action="\pushup" method="post" id ="select">
           <strong id ="count_num">REPS : </strong>
           <input type="number" id="reps" name="reps" min="1" max="50" value="1">
-          <input type="button" id="start_btn" value="START" onClick="location.href='/pushup/'">
-        </div>
+          <input type="submit" id="start_btn" value="START"></input>
+        </form>
       </div>
       <div class="tail"></div>
   </div>
