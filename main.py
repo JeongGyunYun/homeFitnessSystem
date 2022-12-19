@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = "Hello World"
 
 #Code for Test
-UserManage.add_user("Hello", User(user="Hello"))
+UserManage.add_user("Hello", User(user="Hello"), Tracker(0))
 
 @app.route("/")
 def check_session():
@@ -22,7 +22,7 @@ def check_session():
 @app.route("/set/<value>")
 def set_session(value):
   session['username'] = value
-  UserManage.add_user(value, User(value))
+  UserManage.add_user(value, User(value), Tracker(dev_info=0))
   return jsonify(f"Set Name is {session['username']}")
 
 @app.route("/clear")
@@ -48,7 +48,10 @@ def video_feed(filename):
 
 @app.route('/video_feed/camera')
 def camera_feed():
-  return Response(generate_cam(),
+  username = session['username']
+  tracker = UserManage.get_Trakcer_from_username(username)
+  controller = UserManage.get_User_from_username(username).get_controller()
+  return Response(generate_cam(tracker, controller),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/req/stop')

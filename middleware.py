@@ -1,21 +1,30 @@
 from Annotation import Annotation
 from Tracker import Tracker
+from ViedoController import VideoController
+from PoseChecker import PoseChecker
 from User import User
 import cv2
 import util
 
 control_flag = True
 
-def generate_cam():
+def generate_cam(tracker: Tracker, controller: VideoController):
+  """
+  Cam을 프레임단위로 Response 하는 함수
+  :param tracker:
+  :return:
+  """
   annotation = Annotation()
-  dev_info = 0
-  dev = Tracker(dev_info)
-  print(f"[Log]Dev {dev_info} is Starting")
+  dev = tracker
+  dev.capture_start()
+
   while True:
-    success, image = dev.read()
+    success, image, _ = dev.read()
     if not success:
       break
     results = dev.get_pose_results()
+    # TODO 여기서 Cam 한프레임마다 영상 Frame을 비교하여 동영상을 제어함
+    PoseChecker.test(dev, controller)
     annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections)
 
     ret, jpeg = cv2.imencode('.jpg', annotation_img)
@@ -25,12 +34,20 @@ def generate_cam():
 
 
 def generate_video(user: User, filename:str, path:str= "./static/samples/"):
+  """
+  동영상을 프레임 단위로 나누어서 프레임을 Response하는 함수
+  :param user:
+  :param filename:
+  :param path:
+  :return:
+  """
   fullPath = path + filename
   print(f"[Log]Video {filename} is Loaded")
   controller = user.get_controller()
   controller.set_video(fullPath)
   controller.load_on_frame()
 
+  #flag에 따라 동영상을 제어하는 영역
   while controller.get_status():
     if controller.get_control_flag(): # flag가 true
       controller.load_on_frame() #새로운 frame을 읽음
@@ -43,9 +60,16 @@ def generate_video(user: User, filename:str, path:str= "./static/samples/"):
 
 
 def generate_pose_landmark(filename:str, path:str= "./static/samples/") -> bool:
+  """
+  동영상 파일을 입력하면 pose을 인식한 결과를 json파일로 저장해주는 함수
+  :param filename:
+  :param path:
+  :return:
+  """
   json_data = dict()
   fullPath = path + filename
   tracker = Tracker(fullPath)
+  tracker.capture_start()
   while True:
     success, image, frame_num = tracker.read()
     if not success:

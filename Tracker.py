@@ -16,18 +16,20 @@ BLUE_COLOR = (255, 0, 0)
 
 
 class Tracker:
-  def __init__(self, dev_info, win_name=" "):
+  def __init__(self, dev_info):
     self.pose = mp_pose.Pose(
       min_detection_confidence=0.5,
       min_tracking_confidence=0.5
     )
     self.dev_info = dev_info
-    self.cap = cv2.VideoCapture(self.dev_info)
     print(f"[Log Dev:{self.dev_info}]Tracker is initalized")
-    self.win_name = win_name
 
-  def get_window_name(self):
-    return self.win_name
+  def capture_start(self):
+    self.cap = cv2.VideoCapture(self.dev_info)
+    print(f"[Log Dev:{self.dev_info}]Tracker is Start")
+
+  def clear_property(self):
+    None
 
   def read(self):
     self.success, self.image = self.cap.read()
@@ -67,12 +69,6 @@ class Tracker:
     self.image = cv2.flip(self.image, 1)
 
     return self.image
-
-  def show(self, image=None):
-    # if image == None:
-    #   image = self.image
-    cv2.imshow(self.win_name, cv2.flip(self.image, 1))
-    cv2.waitKey(1)
 
   def get_right_elbow_angle(self, results=None):
     if results == None:
