@@ -143,11 +143,11 @@ input.button{
 }
 
 #push-up{
-  background-image: url("https://www.outsideonline.com/wp-content/uploads/2017/07/27/perfect-push-up_s.jpg");
+  background-image: url("/static/samples/push-up.jpg");
 }
 
 #squat{
-  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcaW13qfyw3r4f3YqeGjc1n9-zpbVzmsSWpzLEjzfpFHLbVxQZVwcnAEj6FBEpLtrIveo&usqp=CAU");
+  background-image: url("/static/samples/squat.jpg");
 }
 
 #counting_area{
