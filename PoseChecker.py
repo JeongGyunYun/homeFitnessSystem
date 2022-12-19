@@ -37,6 +37,7 @@ class PoseChecker:
 #어깨 영역
   def shoudler_checker(self):
     MAX_ANGLE = 25
+    # TODO 어깨인데 잘못 넣어음
     right_shoulder_status = self.right_shoulder_checker(MAX_ANGLE)
     left_shoulder_status = self.left_shoulder_checker(MAX_ANGLE)
     if right_shoulder_status and left_shoulder_status:
@@ -192,9 +193,29 @@ class PoseChecker:
                                              PoseLandmark.LEFT_ELBOW,
                                              PoseLandmark.LEFT_WRIST)
     if video_landmark_one_frame:
-      vid_angel = util.get_angel_from_jsonType(video_landmark_one_frame, PoseLandmark.LEFT_SHOULDER, PoseLandmark.LEFT_ELBOW,
+      vid_angel = util.get_angel_from_jsonType(video_landmark_one_frame, PoseLandmark.LEFT_SHOULDER,
+                                               PoseLandmark.LEFT_ELBOW,
                                                PoseLandmark.LEFT_WRIST)
 
     if cam_angel is not None and vid_angel is not None:
       return abs(cam_angel - vid_angel)
 
+  def clac_angle(self, cam_landmark_results, video_landmark_one_frame, point1: PoseLandmark, point2: PoseLandmark,
+                 point3: PoseLandmark):
+    """
+    카메라 각도와 비디오 각도를 p1, p2, p3을 이용해 출력
+    :param cam_landmark_results:
+    :param video_landmark_one_frame:
+    :param point1:
+    :param point2:
+    :param point3:
+    :return:
+    """
+    global cam_angel, vid_angel
+    if cam_landmark_results:
+      cam_angel = util.get_angel_from_symbol(cam_landmark_results, point1, point2, point3)
+
+    if video_landmark_one_frame:
+      vid_angel = util.get_angel_from_jsonType(video_landmark_one_frame, point1, point2, point3)
+
+    return (cam_angel, vid_angel)

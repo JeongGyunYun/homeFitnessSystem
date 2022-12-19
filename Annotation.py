@@ -25,9 +25,12 @@ class Annotation:
       self.pose_landmark_style[connection] = DrawingSpec(color=GREEN_COLOR)
 
   def make_connection_style_from_results(self, results):
+    self.set_default_connection_style()
     for result in results:
-      self.make_connection_style_from_result(result)
+      self.set_connection_red(result)
 
+  def set_connection_red(self, result: Tuple[int, int]):
+      self.pose_landmark_style[result] = DrawingSpec(color=RED_COLOR)
 
   def make_connection_style_from_result(self, result: Tuple[int, int] = None):
     self.set_default_connection_style()
@@ -37,13 +40,8 @@ class Annotation:
       self.pose_landmark_style[connection] = DrawingSpec(color=RED_COLOR)
     return self.pose_landmark_style
 
-  def get_connection_style(self):
+  def get_connection_style(self) -> Mapping[Tuple[int, int], DrawingSpec]:
     return self.pose_landmark_style
-  # def apply_connection_style_from_result(self, result: Tuple[int, int]):
-  #
-  #
-  # def get_connection_style(self, results):
-  #
 
 
   def reset(self):

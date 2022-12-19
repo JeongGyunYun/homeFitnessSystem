@@ -27,10 +27,9 @@ def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
     poseChecker.shoudler_checker()
     line_set = poseChecker.get_wrong_line()
 
-    annotation.make_connection_style_from_result(list_set)
-
-
-    annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections)
+    annotation.make_connection_style_from_results(line_set)
+    style = annotation.get_connection_style()
+    annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections, connection_drawing_spec=style)
     poseChecker.clear_wrong_line()
 
     ret, jpeg = cv2.imencode('.jpg', annotation_img)
