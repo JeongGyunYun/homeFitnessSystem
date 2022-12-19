@@ -8,67 +8,69 @@ class PoseConfidence:
     self.counter = 0
     self.stage = None
     self.ready = None
-    self.check = .1
+    self.check = .01
     self.flag = False
     self.wrong = []
 
-  def pushup_preposition_check(self, ls, rs, le, re, lw, rw, lh, rh):
+  def pushup_preposition_check(self, checkNum, LeftShoulder, RightShoulder, LeftElbow, RightElbow, LeftWrist, RightWrist, LeftHip, RightHip):
     # 양쪽 엉덩이 카메라 평행 맞추기
-    if -self.check > lh[2] or lh[2] > self.check or -self.check > rh[2] or rh[2] > self.check:
-      ready = "Take a position"
-      return False
-    # 양쪽 손 평행 맞추기
-    if abs(lw[2] - rw[2]) > self.check:
-      ready = "hand"
-      return False
-    # 양쪽 어깨 손과 z 일치
-    if abs(lw[2] - ls[2]) > self.check or abs(rw[2] - rs[2]) > self.check:
-      ready = "shoulder"
-      return False
+    if checkNum == 0:
+      self.ready = "Take a position"
+      if -self.check > LeftHip[2] or LeftHip[2] > self.check or -self.check > RightHip[2] or RightHip[2] > self.check:
+        return False
+    elif checkNum == 1:
+      # 양쪽 손 평행 맞추기
+      self.ready = "hand"
+      if abs(LeftWrist[2] - RightWrist[2]) > self.check:
+        return False
+    elif checkNum == 2:
+      # 양쪽 어깨 손과 z 일치
+      self.ready = "shoulder"
+      if abs(LeftWrist[2] -LeftShoulder[2]) > self.check or abs(RightWrist[2] -RightShoulder[2]) > self.check:
+        return False
+    elif checkNum == 3:
     # 양쪽 손에서 어깨까지 x 간격
-    if abs(lw[0] - ls[0]) - abs(rw[0] - rs[0]) > self.check:
-      ready = "hands width"
-      return False
+      if abs(LeftWrist[0] -LeftShoulder[0]) - abs(RightWrist[0] -RightShoulder[0]) > self.check:
+        self.ready = "hands width"
+        return False
+    elif checkNum == 4:
     # 양쪽 어깨 y 값 일치
-    if abs(ls[1] - rs[1]) > self.check:
-      ready = "shoulder height"
-      return False
+      self.ready = "shoulder height"
+      if abs(LeftShoulder[1] -RightShoulder[1]) > self.check:
+        return False
     # 팔꿈치 밖으로 돌아간지 확인
-    if abs(le[0] - lw[0]) > self.check or abs(re[0] - rw[0]) > self.check:
-      ready = "elbow"
-      return False
+    elif checkNum == 5:
+      self.ready = "elbow"
+      if abs(LeftElbow[0] - LeftWrist[0]) > self.check or abs(RightElbow[0] - RightWrist[0]) > self.check:
+        return False
     # 엉덩이 높이 어깨와 일치 -> 어떻게??
 
     return True
 
-  def pushup_position_check(self, ls, rs, le, re, lw, rw, lh, rh):
+  def pushup_position_check(self,LeftShoulder,RightShoulder, LeftElbow, RightElbow, LeftWrist, RightWrist, LeftHip, RightHip):
     # 양쪽 엉덩이 카메라 평행 맞추기
-    if -self.check > lh[2] or lh[2] > self.check or -self.check > rh[2] or rh[2] > self.check:
+    if -self.check > LeftHip[2] or LeftHip[2] > self.check or -self.check > RightHip[2] or RightHip[2] > self.check:
       self.wrong.append((23, 24))
     # 양쪽 어깨 손과 z 일치
-    if abs(lw[2] - ls[2]) > self.check:
+    if abs(LeftWrist[2] -LeftShoulder[2]) > self.check:
       self.wrong.append((11, 13))
       self.wrong.append((13, 15))
-    if abs(rw[2] - rs[2]) > self.check:
+    if abs(RightWrist[2] -RightShoulder[2]) > self.check:
       self.wrong.append((12, 14))
       self.wrong.append((14, 16))
     # 양쪽 어깨 y 값 일치
-    if abs(ls[1] - rs[1]) > self.check:
+    if abs(LeftShoulder[1] -RightShoulder[1]) > self.check:
       self.wrong.append((11, 12))
     # 팔꿈치 밖으로 돌아간지 확인
-    if abs(le[0] - lw[0]) > self.check:
+    if abs(LeftElbow[0] - LeftWrist[0]) > self.check:
       self.wrong.append((11, 13))
-    if abs(re[0] - rw[0]) > self.check:
+    if abs(RightElbow[0] - RightWrist[0]) > self.check:
       self.wrong.append((12, 14))
     # 엉덩이 높이
     return self.wrong
 
-  def pushup_calculate_angle(self, a: np.array, b: np.array, c: np.array):
-    a = np.array(a)  # First
-    b = np.array(b)  # Mid
-    c = np.array(c)  # End
-
-    radians = np.arctan2(c[1] - b[1], c[0] - b[0]) - np.arctan2(a[1] - b[1], a[0] - b[0])
+  def pushup_calculate_angle(self, LeftShoulder, LeftElbow, LeftWrist):
+    radians = np.arctan2(LeftWrist[1] - LeftElbow[1], LeftWrist[0] - LeftElbow[0]) - np.arctan2(LeftShoulder[1] - LeftElbow[1], LeftShoulder[0] - LeftElbow[0])
     angle = np.abs(radians * 180.0 / np.pi)
 
     if angle > 180.0:
@@ -82,7 +84,7 @@ class PoseConfidence:
     if angle < 110 and self.stage == 'down':
       self.stage = 'up'
     if angle > 170 and self.stage == 'up':
-      stage = None
+      self.stage = None
       self.counter += 1
 
   def set_wrong_connection_list(self, wrong_list):
