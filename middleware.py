@@ -8,7 +8,7 @@ import util
 
 control_flag = True
 
-def generate_cam(tracker: Tracker, controller: VideoController):
+def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
   """
   Cam을 프레임단위로 Response 하는 함수
   :param tracker:
@@ -17,6 +17,7 @@ def generate_cam(tracker: Tracker, controller: VideoController):
   annotation = Annotation()
   dev = tracker
   dev.capture_start()
+  poseChecker = poseChecker
 
   while True:
     success, image, _ = dev.read()
@@ -24,7 +25,10 @@ def generate_cam(tracker: Tracker, controller: VideoController):
       break
     results = dev.get_pose_results()
     # TODO 여기서 Cam 한프레임마다 영상 Frame을 비교하여 동영상을 제어함
-    PoseChecker.test(dev, controller)
+    # PoseChecker.test(dev, controller)
+
+    poseChecker.play()
+
     annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections)
 
     ret, jpeg = cv2.imencode('.jpg', annotation_img)
@@ -33,7 +37,7 @@ def generate_cam(tracker: Tracker, controller: VideoController):
            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
-def generate_video(user: User, filename:str, path:str= "./static/samples/"):
+def generate_video(user: User, posechecker: PoseChecker, filename:str, path:str= "./static/samples/"):
   """
   동영상을 프레임 단위로 나누어서 프레임을 Response하는 함수
   :param user:
@@ -45,6 +49,7 @@ def generate_video(user: User, filename:str, path:str= "./static/samples/"):
   print(f"[Log]Video {filename} is Loaded")
   controller = user.get_controller()
   controller.set_video(fullPath)
+  posechecker.set_json_data()
   controller.load_on_frame()
 
   #flag에 따라 동영상을 제어하는 영역

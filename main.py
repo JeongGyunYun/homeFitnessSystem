@@ -49,10 +49,10 @@ def squat(count):
     return render_template('squat.html', count)
 
 @app.route('/home')
-#def index():
-  #return render_template("index.html")
-def main():
-  return render_template("main.html")
+def index():
+  return render_template("index.html")
+# def main():
+#   return render_template("main.html")
 
 
 @app.route('/video_feed/<string:filename>/<int:count>')
@@ -60,16 +60,17 @@ def video_feed(filename, count):
   username = session['username']
   user = UserManage.get_User_from_username(username)
   user.get_controller().set_max_loop_count(count)
-  return Response(generate_video(user=user, filename=filename),
+  postChecker = UserManage.get_PoseChecker_from_username(username)
+  return Response(generate_video(user=user,posechecker=postChecker, filename=filename),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 @app.route('/video_feed/camera')
 def camera_feed():
   username = session['username']
+  pose_checker = UserManage.get_PoseChecker_from_username(username)
   tracker = UserManage.get_Trakcer_from_username(username)
-  controller = UserManage.get_User_from_username(username).get_controller()
-  return Response(generate_cam(tracker, controller),
+  return Response(generate_cam(pose_checker, tracker),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/req/stop')

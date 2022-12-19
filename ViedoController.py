@@ -1,4 +1,5 @@
 import cv2
+import os
 
 class VideoController:
   def __init__(self):
@@ -12,6 +13,11 @@ class VideoController:
     self.video: str = video
     self.cap = cv2.VideoCapture(self.video)
     self.clear_property()
+
+  def get_video_name_without_ex(self):
+    basename = os.path.basename(self.video)
+    name, ext = basename.split(".")
+    return name
 
   def set_max_loop_count(self, n):
     self.max_loop_count = n

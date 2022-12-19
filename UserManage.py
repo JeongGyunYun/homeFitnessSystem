@@ -2,12 +2,14 @@ from typing import Union
 
 from User import User
 from Tracker import Tracker
+from PoseChecker import PoseChecker
 user_list = dict()
 
 class UserManage:
   @staticmethod
   def add_user(username:str, userType:User, trackerType:Tracker):
-    user_list[username] = [userType, trackerType]
+    checker = PoseChecker(trackerType, userType.get_controller())
+    user_list[username] = [userType, trackerType, checker]
 
   @staticmethod
   def remove_user(username:str):
@@ -23,6 +25,12 @@ class UserManage:
   def get_Trakcer_from_username(username: str) -> Tracker:
     if user_list[username]:
       return user_list[username][1]
+    return None
+
+  @staticmethod
+  def get_PoseChecker_from_username(username: str) -> Tracker:
+    if user_list[username]:
+      return user_list[username][2]
     return None
 
   @staticmethod

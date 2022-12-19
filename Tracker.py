@@ -56,6 +56,9 @@ class Tracker:
     self.results = results
     return self.results
 
+  def get_result(self):
+    return self.results
+
   def draw_annotation(self, landmark_list, connections,
                       landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style(),
                       connection_drawing_spec=DrawingSpec()):

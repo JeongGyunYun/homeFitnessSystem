@@ -15,6 +15,23 @@ def get_angel(firstLandmark: PoseLandmark, midLandmark: PoseLandmark, lastlandma
     degree = 360.0 - degree
   return degree
 
+def get_angel_from_jsonType(json_data, firstLandmark, midLandmark, lastLandmark):
+  if json_data["pose_landmarks"]:
+    basePoint = json_data["pose_landmarks"]
+    firstPoint = basePoint[firstLandmark]
+    midPoint = basePoint[midLandmark]
+    lastPoint =basePoint[lastLandmark]
+
+    radian = atan2(lastPoint["y"] - midPoint["y"],
+                   lastPoint["x"] - midPoint["x"]) - \
+             atan2(firstPoint["y"] - midPoint["y"],
+                   firstPoint["x"] - midPoint["x"])
+
+  degree = abs(radian * 180.0 / pi)
+  if degree > 180.0:
+    degree = 360.0 - degree
+  return degree
+
 
 def get_angel_from_symbol(results, firstLandmark, midLandmark, lastLandmark):
   degree = None
@@ -74,3 +91,16 @@ def convert_mpResultType_to_Dict(mp_results):
   result_dic["pose_landmarks"] = pose_list
   result_dic["pose_world_landmarks"] = pose_word_list
   return result_dic
+
+
+def json_load_by_frame(filename, frameNo, path="./static/sampleDB/"):
+  full_path = path + filename + ".json"
+  with open(full_path) as json_file:
+    data = json.load(json_file)
+  return data[str(frameNo)]
+
+def json_load(filename, path="./static/sampleDB/"):
+  full_path = path + filename + ".json"
+  with open(full_path) as json_file:
+    data = json.load(json_file)
+  return data
