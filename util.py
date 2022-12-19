@@ -1,5 +1,3 @@
-from enum import IntEnum
-
 from solutions import PoseLandmark
 from math import atan2, pi
 
