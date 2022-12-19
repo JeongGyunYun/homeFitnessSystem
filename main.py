@@ -66,6 +66,11 @@ def video_play():
   return f"{controller.get_control_flag()}"
 
 
+@app.route("/saveLandmark/<filename>")
+def save_pose_landmark(filename):
+  status = generate_pose_landmark(filename)
+  return f"{status}"
+
 # @app.before_request
 # def make_session_permanent():
 #   session.permanent = True

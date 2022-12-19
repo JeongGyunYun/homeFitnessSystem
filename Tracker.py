@@ -31,7 +31,8 @@ class Tracker:
 
   def read(self):
     self.success, self.image = self.cap.read()
-    return self.success, self.image
+    current_frame_num = int(self.cap.get(1))
+    return self.success, self.image, current_frame_num
 
   def read_image(self):
     self.success, self.image = self.cap.read()

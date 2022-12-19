@@ -2,6 +2,7 @@ from Annotation import Annotation
 from Tracker import Tracker
 from User import User
 import cv2
+import util
 
 control_flag = True
 
@@ -23,7 +24,6 @@ def generate_cam():
            b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
 
-#TODO Train 영상도 landmark를 그리나?
 def generate_video(user: User, filename:str, path:str= "./static/samples/"):
   fullPath = path + filename
   print(f"[Log]Video {filename} is Loaded")
@@ -40,3 +40,19 @@ def generate_video(user: User, filename:str, path:str= "./static/samples/"):
     byte_image = controller.get_byte_image(frame)
     yield (b'--frame\r\n'
            b'Content-Type: image/jpeg\r\n\r\n' + byte_image + b'\r\n\r\n')
+
+
+def generate_pose_landmark(filename:str, path:str= "./static/samples/") -> bool:
+  json_data = dict()
+  fullPath = path + filename
+  tracker = Tracker(fullPath)
+  while True:
+    success, image, frame_num = tracker.read()
+    if not success:
+      break
+    results = tracker.get_pose_results()
+    json_data[frame_num] = util.convert_mpResultType_to_Dict(results)
+
+  ex_file = filename.split(".")[0]
+  util.save_to_json(json_data, f'{ex_file}.json')
+  return True

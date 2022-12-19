@@ -15,6 +15,7 @@ class VideoController:
   def clear_property(self):
     self.status = None
     self.frame = None
+    self.frame_no = None
     self.control_flag = True
 
   def load_on_frame(self):
@@ -29,6 +30,9 @@ class VideoController:
 
   def stop_video(self):
     self.control_flag = False
+
+  def get_frame_number(self):
+    return int(self.cap.get(1))
 
   def get_frame(self):
     return self.frame
