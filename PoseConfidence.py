@@ -88,7 +88,7 @@ class PoseConfidence:
       self.counter += 1
 
   def set_wrong_connection_list(self, wrong_list):
-    self.worng = wrong_list
+    self.wrong = wrong_list
 
   # TODO 단순히 self.wrong을 return 하지 않고 계산으로 처리하기/
   def get_wrong_connection_list(self):

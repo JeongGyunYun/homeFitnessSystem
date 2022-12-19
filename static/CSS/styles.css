@@ -44,7 +44,6 @@ body{
 }
 
 .mobile-view{
-  display: inline-block;
   width: 640px;
   height: 320px;
   max-height: 320px;
@@ -56,8 +55,104 @@ body{
   overflow: auto;
 }
 
+.mobile-view-main{
+  display: block;
+  width: 640px;
+  height: 320px;
+  max-height: 320px;
+  background-color: #c2c7cb;
+  border: none;
+  background-color: rgb(198 221 205);
+}
+
+ol{
+  margin-top: 10px;
+  margin-bottom: 3px;
+}
+
+li{
+  margin: 5px;
+  font-size: 20px; 
+}
+
+#tip{
+  text-align:center;
+  font-size:20px;
+  color: red;
+  font-weight: bold;
+}
+
+#title{
+  font-size: 40px;
+  height: 15%;
+  color: white;
+  background-color: #212121;
+  text-align: center;
+}
+
+#select{
+  padding-top: 10px;
+  display: flex;
+}
+
+#count_num{
+  width: 33%;
+  text-align: center;
+}
+
+#reps{
+  width: 80px;
+  font-size:30px;
+  text-align: center;
+  margin-left: 30px;
+  margin-right: 70px;
+  border: none;
+  border-radius: 10px 10px 10px 10px;
+}
+
+#start_btn{
+  margin-left: 50px;
+  width: 100px;
+  background-color: rgb(59 130 246 / 0.5);
+  border: none;
+  border-radius: 10px 10px 10px 10px;
+}
+
+#select_train{
+  display: flex;
+  width: 640px;
+  height: 85%;
+}
+
+input.button{
+  font-size: 30px;
+  font-weight: bold;
+  color: blue;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center; /* 가로 - 중앙으로 */
+  justify-content: flex-end; /* 세로 - 상단으로 */
+  float: left;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-color: transparent; /* make the button transparent */
+  background-repeat: no-repeat;  /* make the background image appear only once */
+  background-position: 0px 0px;  /* equivalent to 'top left' */
+  border: 1px solid black;
+}
+
+#push-up{
+  background-image: url("https://www.outsideonline.com/wp-content/uploads/2017/07/27/perfect-push-up_s.jpg");
+}
+
+#squat{
+  background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcaW13qfyw3r4f3YqeGjc1n9-zpbVzmsSWpzLEjzfpFHLbVxQZVwcnAEj6FBEpLtrIveo&usqp=CAU");
+}
+
 #counting_area{
   position: relative;
+  display: flex;
   border: 1px solid;
   background-color: #f00;
   margin: 0 auto;
@@ -77,18 +172,6 @@ body{
   z-index: 1;
  }
 
-.my_video{
-  width: 400px;
-  height: 320px;
-  background-size: contain;
-}
-
-.sample_video{
-  width: 180px;
-  height: 320px;
-  background-size: contain;
-}
-
 #goal{
   position: absolute;
   top: -20px;
@@ -101,4 +184,16 @@ body{
   bottom: -20px;
   left: 12px;
   z-index: 2;
+}
+
+.my_video{
+  width: 400px;
+  height: 320px;
+  background-size: contain;
+}
+
+.sample_video{
+  width: 180px;
+  height: 320px;
+  background-size: contain;
 }
