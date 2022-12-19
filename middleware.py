@@ -38,6 +38,7 @@ def generate_video(user: User, filename:str, path:str= "./static/samples/"):
   #   results = dev.get_pose_results()
   #   annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections)
   controller.load_on_frame()
+
   while controller.get_status():
     if controller.get_control_flag(): # flag가 true
       controller.load_on_frame() #새로운 frame을 읽음
