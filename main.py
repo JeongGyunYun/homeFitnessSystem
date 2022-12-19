@@ -11,9 +11,24 @@ count = 1
 app = Flask(__name__)
 
 @app.route('/')
-def index():
-  return render_template("index.html")
+def main():
+  return render_template("main.html")
 
+@app.route('/pre_pushup')
+def pre_pushup():
+    return render_template('pre_pushup.html')
+  
+@app.route('/pre_squat')
+def pre_squat():
+    return render_template('pre_squat.html')
+  
+@app.route('/pushup/<count>')
+def pushup(count):
+    return render_template('pushup.html', count)
+
+@app.route('/squat/<count>')
+def squat(count):
+    return render_template('squat.html', count)
 
 def gen(dev_info):
   annotation = Annotation()
