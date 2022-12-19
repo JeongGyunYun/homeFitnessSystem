@@ -8,6 +8,11 @@ import util
 def generate_data(user:User):
   yield str(user.get_count())
 
+control_flag = True
+pose_flag = False
+checkNum = 0
+train = 0
+# 0: pushup 1: squat
 
 def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
   """
@@ -25,17 +30,46 @@ def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
     if not success:
       break
     results = dev.get_pose_results()
+    # 사전 자세 확인
+    if train == 0:
+      if checkNum < 6:
+        if flag == False:
+          flag = poseChecker.pushup_preposition_check(checkNum)
+        else :
+          checkNum += 1
+          flag = False
+          print(poseChecker.ready)
+          print(checkNum)
+        continue
+      else :
+        # 사전 준비 자세 동작 수
+        if checkNum < 5:
+          if flag == False:
+            flag = poseChecker.squat_preposition_check(checkNum)
+          else :
+            checkNum += 1
+            flag = False
+            print(poseChecker.ready)
+            print(checkNum)
+        continue
     # TODO 여기서 Cam 한프레임마다 영상 Frame을 비교하여 동영상을 제어
     # poseChecker.shoudler_checker()
     # poseChecker.elbow_checker()
     poseChecker.count_up()
 
     line_set = poseChecker.get_wrong_line()
+    if train == 0:
+      line_set.add(poseChecker.pushup_position_check())
+    else:
+      line_set.add(poseChecker.squat_position_check())
 
     annotation.make_connection_style_from_results(line_set)
     style = annotation.get_connection_style()
     annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections, connection_drawing_spec=style)
     poseChecker.clear_wrong_line()
+    poseChecker.calc_pushup_count()
+    ####################################
+    PoseChecker.counter
 
     ret, jpeg = cv2.imencode('.jpg', annotation_img)
     frame = jpeg.tobytes()
