@@ -66,6 +66,7 @@ class VideoController:
     return self.control_flag
 
   def get_byte_image(self, frame):
+    frame = cv2.flip(frame, 1)
     ret, jpeg = cv2.imencode('.jpg', frame)
     byte_frame = jpeg.tobytes()
     return byte_frame

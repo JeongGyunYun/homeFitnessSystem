@@ -1,6 +1,5 @@
 from Annotation import Annotation
 from Tracker import Tracker
-from ViedoController import VideoController
 from PoseChecker import PoseChecker
 from User import User
 import cv2
@@ -24,12 +23,15 @@ def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
     if not success:
       break
     results = dev.get_pose_results()
-    # TODO 여기서 Cam 한프레임마다 영상 Frame을 비교하여 동영상을 제어함
-    # PoseChecker.test(dev, controller)
+    # TODO 여기서 Cam 한프레임마다 영상 Frame을 비교하여 동영상을 제어
+    poseChecker.shoudler_checker()
+    line_set = poseChecker.get_wrong_line()
 
-    poseChecker.play()
+    annotation.make_connection_style_from_result(list_set)
+
 
     annotation_img = dev.draw_annotation(landmark_list=results.pose_landmarks, connections=annotation.pose_connections)
+    poseChecker.clear_wrong_line()
 
     ret, jpeg = cv2.imencode('.jpg', annotation_img)
     frame = jpeg.tobytes()
