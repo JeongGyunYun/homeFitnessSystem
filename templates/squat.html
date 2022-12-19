@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home Fitness Training System</title>
+  <link rel="stylesheet" href="{{url_for('static', filename='CSS/styles.css')}}">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="{{url_for('static', filename='JS/scripts.js')}}"></script>
+</head>
+<body>
+   <div class="mobile-contaier">
+      <div class="head"></div>
+      <div class="oEUMCt"></div>
+      <div class="mobile-view">
+      <div id="clear">CLEAR</div>
+        <div id="counting_area">
+          <div class="num" id="goal">{{value}}</div>
+          <div class="bar"></div>
+          <div class="num" id="count">0</div>
+        </div>
+        <img class="my_video" src="{{ url_for('video_feed', dev='0')}}">
+        <video class="sample_video" controls loop>
+          <source src="/static/samples/sam1.mov">
+        </video>
+      </div>
+      <div class="tail"></div>
+  </div>
+</body>
+</html>

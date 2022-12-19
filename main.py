@@ -1,4 +1,5 @@
 from flask import Flask, Response, render_template
+from flask import request
 import cv2
 import threading
 
@@ -22,13 +23,19 @@ def pre_pushup():
 def pre_squat():
     return render_template('pre_squat.html')
   
-@app.route('/pushup/<count>')
-def pushup(count):
-    return render_template('pushup.html', count)
+@app.route('/pushup', methods=['GET', 'POST'])
+def pushup():
+    if request.method == 'POST':
+      count = request.form['reps']
+      print(count)
+    return render_template('pushup.html', value = count)
 
-@app.route('/squat/<count>')
-def squat(count):
-    return render_template('squat.html', count)
+@app.route('/squat', methods=['GET', 'POST'])
+def squat():
+    if request.method == 'POST':
+      count = request.form['reps']
+      print(count)
+    return render_template('squat.html', value = count)
 
 def gen(dev_info):
   annotation = Annotation()
