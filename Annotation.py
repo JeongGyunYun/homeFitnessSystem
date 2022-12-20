@@ -4,7 +4,7 @@ from mediapipe.python.solutions.drawing_utils import DrawingSpec
 
 RED_COLOR = (0, 0, 255)
 GREEN_COLOR = (0, 128, 0)
-ORANGE_COLOR = (255, 127, 0)
+ORANGE_COLOR = (0, 127, 255)
 
 
 class Annotation:

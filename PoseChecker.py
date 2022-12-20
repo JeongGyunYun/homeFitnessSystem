@@ -360,22 +360,3 @@ class PoseChecker:
 
   def clear_wrong_line(self):
     self.wrong_line.clear()
-
-  # def squat_position_check(self):
-  #   landmarks = self.tracker.get_result().pose_landmarks.landmark
-  #   LeftShoulder = [landmarks[PoseLandmark.LEFT_SHOULDER].x,
-  #                   landmarks[PoseLandmark.LEFT_SHOULDER].y, landmarks[PoseLandmark.LEFT_SHOULDER].z]
-  #   LeftElbow = [landmarks[PoseLandmark.LEFT_ELBOW].x,
-  #             landmarks[PoseLandmark.LEFT_ELBOW].y, landmarks[PoseLandmark.LEFT_ELBOW].z]
-  #   LeftWrist = [landmarks[PoseLandmark.LEFT_WRIST].x,
-  #             landmarks[PoseLandmark.LEFT_WRIST].y, landmarks[PoseLandmark.LEFT_WRIST].z]
-  #   RightShoulder = [landmarks[PoseLandmark.RIGHT_SHOULDER].x,
-  #                     landmarks[PoseLandmark.RIGHT_SHOULDER].y, landmarks[PoseLandmark.RIGHT_SHOULDER].z]
-  #   RightElbow = [landmarks[PoseLandmark.RIGHT_ELBOW].x,
-  #                 landmarks[PoseLandmark.RIGHT_ELBOW].y, landmarks[PoseLandmark.RIGHT_ELBOW].z]
-  #   RightWrist = [landmarks[PoseLandmark.RIGHT_WRIST].x,
-  #                 landmarks[PoseLandmark.RIGHT_WRIST].y, landmarks[PoseLandmark.RIGHT_WRIST].z]
-  #   LeftHip = [landmarks[PoseLandmark.LEFT_HIP].x,
-  #             landmarks[PoseLandmark.LEFT_HIP].y, landmarks[PoseLandmark.LEFT_HIP].z]
-  #   RightHip = [landmarks[PoseLandmark.RIGHT_HIP].x,
-  #                 landmarks[PoseLandmark.RIGHT_HIP].y, landmarks[PoseLandmark.RIGHT_HIP].z]

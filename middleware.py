@@ -48,7 +48,6 @@ def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
         poseChecker.play_video()
       else:
         poseChecker.stop_video()
-
       poseChecker.calc_pushup_count() #Count 하기
 
       wrong_line = poseChecker.get_wrong_line() #잘못된 자세 받아오기

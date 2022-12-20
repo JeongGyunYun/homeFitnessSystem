@@ -121,7 +121,7 @@ def video_stop():
 def video_play():
   username = session['username']
   controller:VideoController = UserManage.get_User_from_username(username).get_controller()
-  controller.play_video()
+  # controller.play_video()
   return f"{controller.get_control_flag()}"
 
 

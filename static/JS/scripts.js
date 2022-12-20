@@ -1,27 +1,22 @@
 $(function (){
-  console.log("##########");
-
   var count = $("#count");
-  var num;
   var goal = $("#goal").text();
   var bars = $(".bar");
+  var cnum, gnum = parseInt(goal);
 
-  console.log(count);
-  console.log(goal);
-  
-  bars.each(function(i,el){
-    $(this).css({
-      height : 0 + "%"
-    });
-  });
-  
   var clear = setInterval(function(){
+    fetch("{{ url_for('data_feed') }}")
+            .then(response => {
+                response.text().then(data => {
+                  count.innerText = data
+                });
+            })
+    cnum = parseInt(count.text())
     bars.each(function(){
-      num = count.text()
-      if(num <= goal){
+      if(cnum <= gnum){
         // count.text(num)
         $(this).css({
-          height : num / goal * 100 + "%"
+          height : cnum / gnum * 100 + "%"
         })
       }
       else{
