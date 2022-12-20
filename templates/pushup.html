@@ -15,6 +15,7 @@
     <div class="oEUMCt"></div>
     <div class="mobile-view">
     <div id="clear">CLEAR</div>
+      <div id="ready">READY</div>
       <div id="counting_area">
         <div class="num" id="goal">{{value}}</div>
         <div class="bar"></div>
@@ -37,5 +38,16 @@
             })
     }, 500);
 
+  var ready = setInterval(function(){
+    fetch("{{ url_for('ready_data_feed') }}")
+            .then(response => {
+                response.text().then(data => {
+                  if(data === "True"){
+                    $("#ready").css('visibility', 'hidden')
+                    clearInterval(ready)
+                  }
+                });
+            })
+  })
 </script>
 </html>

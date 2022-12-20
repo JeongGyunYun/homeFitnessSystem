@@ -17,6 +17,18 @@ body{
   width: 760px;
 }
 
+#ready{
+  position: absolute;
+  text-align: center;
+  line-height : 300px;
+  z-index: 3;
+  width: 640px;
+  height: 318px;
+  color: red;
+  font-size: 50px;
+  font-weight: bold;
+}
+
 .head, .tail{
   background-color: #b9babae8;
   height: 320px;

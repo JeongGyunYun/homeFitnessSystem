@@ -5,12 +5,12 @@ $(function (){
   var cnum, gnum = parseInt(goal);
 
   var clear = setInterval(function(){
-    fetch("{{ url_for('data_feed') }}")
-            .then(response => {
-                response.text().then(data => {
-                  count.innerText = data
-                });
-            })
+    // fetch("{{ url_for('data_feed') }}")
+    //         .then(response => {
+    //             response.text().then(data => {
+    //               count.innerText = data
+    //             });
+    //         })
     cnum = parseInt(count.text())
     bars.each(function(){
       if(cnum <= gnum){
