@@ -8,10 +8,9 @@ import util
 def generate_data(user:User):
   yield str(user.get_count())
 
-flag = False
-checkNum = 0
-train = 0
-# 0: pushup 1: squat
+def generate_ready_data(pose_checker: PoseChecker):
+  yield str(pose_checker.is_ready_push_up())
+
 
 def generate_cam(poseChecker: PoseChecker, tracker:Tracker):
   """

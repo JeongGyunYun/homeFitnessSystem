@@ -91,6 +91,11 @@ def data_feed():
   user = UserManage.get_User_from_username(username)
   return Response(generate_data(user), mimetype='text')
 
+@app.route('/ready_data_feed')
+def ready_data_feed():
+  username = session['username']
+  pose_checker = UserManage.get_PoseChecker_from_username(username)
+  return Response(generate_ready_data(pose_checker))
 
 @app.route('/video_feed/<string:filename>/<int:count>')
 def video_feed(filename, count):
@@ -109,6 +114,7 @@ def camera_feed():
   tracker = UserManage.get_Trakcer_from_username(username)
   return Response(generate_cam(pose_checker, tracker),
                   mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @app.route('/req/stop')
 def video_stop():
