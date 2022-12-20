@@ -10,53 +10,57 @@ import util
 
 
 class PoseChecker:
-  def __init__(self, tracker, controller):
+  def __init__(self, tracker, user):
+    self.user: User = user
     self.tracker: Tracker = tracker
-    self.controller: VideoController = controller
-    self.wrong_line = set()
+    self.controller: VideoController = user.get_controller()
+    self.before_push_flag = False
+    self.checkNum = 0
+    self.async_line = set()
     self.ready = None
     self.check = .05
     self.counter = 0
     self.stage = None
-    self.wrong = []
+    self.wrong_line = set()
+    self.is_pre_pose = False
 
-
-  # def square_check(self):
-  #
+  def stop_video(self):
+    self.controller.stop_video()
+  def play_video(self):
+    self.controller.play_video()
 
   def set_json_data(self):
     self.json_data = util.json_load(self.controller.get_video_name_without_ex())
 
-  def add_wrong_line(self, connection:PoseConnection):
-    self.wrong_line.add(connection)
+  def add_async_line(self, connection:PoseConnection):
+    self.async_line.add(connection)
 
-  def clear_wrong_line(self):
-    self.wrong_line.clear()
+  def clear_async_line(self):
+    self.async_line.clear()
 
-  def get_wrong_line(self):
-    return self.wrong_line
+  def get_async_line(self):
+    return self.async_line
 
 #어깨 영역
   def shoudler_checker(self):
-    MAX_ANGLE = 25
-    # TODO 어깨인데 잘못 넣어음
+    MAX_ANGLE = 35
     right_shoulder_status = self.right_shoulder_checker(MAX_ANGLE)
     left_shoulder_status = self.left_shoulder_checker(MAX_ANGLE)
     if right_shoulder_status and left_shoulder_status:
       #TODO 실제 구현 True False로 구현
-      self.controller.play_video()
+      return True
     else:
       # Log을 위한 부분
       if not right_shoulder_status:
-        self.add_wrong_line(PoseConnection.RIGHT_SHOULDER_TO_RIGHT_ELBOW)
-        self.add_wrong_line(PoseConnection.RIGHT_ELBOW_TO_RIGHT_WRIST)
-        print("[Log] right problem")
+        self.add_async_line(PoseConnection.RIGHT_SHOULDER_TO_RIGHT_ELBOW)
+        self.add_async_line(PoseConnection.RIGHT_SHOULDER_TO_RIGHT_HIP)
+        print("[Log] right shoulder problem")
       if not left_shoulder_status:
-        self.add_wrong_line(PoseConnection.LEFT_SHOULDER_TO_LEFT_ELBOW)
-        self.add_wrong_line(PoseConnection.LEFT_ELBOW_TO_LEFT_WRIST)
-        print("[Log] left problem")
+        self.add_async_line(PoseConnection.LEFT_SHOULDER_TO_LEFT_ELBOW)
+        self.add_async_line(PoseConnection.LEFT_SHOULDER_TO_LEFT_HIP)
+        print("[Log] left shoulder problem")
       # TODO 실제 구현 True False로 구현
-      self.controller.stop_video()
+      return False
 
   def diff_left_shoulder_angle(self, cam_landmark_results, video_landmark_one_frame):
     """
@@ -123,20 +127,24 @@ class PoseChecker:
 
 #팔꿈치 Checker
   def elbow_checker(self):
-    MAX_ANGLE = 30
+    MAX_ANGLE = 35
     right_elbow_status = self.right_elbow_checker(MAX_ANGLE)
     left_elbow_status = self.left_elbow_checker(MAX_ANGLE)
     if right_elbow_status and left_elbow_status:
       #TODO 실제 구현 True False로 구현
-      self.controller.play_video()
+      return True
     else:
       # Log을 위한 부분
       if not right_elbow_status:
-        print("[Log] right problem")
+        self.add_async_line(PoseConnection.RIGHT_SHOULDER_TO_RIGHT_ELBOW)
+        self.add_async_line(PoseConnection.RIGHT_ELBOW_TO_RIGHT_WRIST)
+        print("[Log] right elbow problem")
       if not left_elbow_status:
-        print("[Log] left problem")
+        self.add_async_line(PoseConnection.LEFT_SHOULDER_TO_LEFT_ELBOW)
+        self.add_async_line(PoseConnection.LEFT_ELBOW_TO_LEFT_WRIST)
+        print("[Log] left elbow problem")
       # TODO 실제 구현 True False로 구현
-      self.controller.stop_video()
+      return False
 
   def right_elbow_checker(self, max_angle) -> bool:
     """
@@ -147,6 +155,7 @@ class PoseChecker:
     MAX_ANGLE = max_angle
     diff_right_elbow = self.diff_right_elbow_angle(self.tracker.get_result(),
                                                    self.json_data[str(self.controller.get_frame_number())])
+
     if diff_right_elbow is None or diff_right_elbow > MAX_ANGLE:
       return False
     return True
@@ -165,7 +174,6 @@ class PoseChecker:
       return False
 
     return True
-
 
 
   def diff_right_elbow_angle(self, cam_landmark_results, video_landmark_one_frame):
@@ -222,57 +230,53 @@ class PoseChecker:
 
     return (cam_angel, vid_angel)
 
-  def pushup_preposition_check(self, checkNum) -> bool:
-    landmarks = self.tracker.get_result().pose_landmarks
-    LeftShoulder = [landmarks[PoseLandmark.LEFT_SHOULDER].x,
-                    landmarks[PoseLandmark.LEFT_SHOULDER].y, landmarks[PoseLandmark.LEFT_SHOULDER].z]
-    LeftElbow = [landmarks[PoseLandmark.LEFT_ELBOW].x,
-              landmarks[PoseLandmark.LEFT_ELBOW].y, landmarks[PoseLandmark.LEFT_ELBOW].z]
-    LeftWrist = [landmarks[PoseLandmark.LEFT_WRIST].x,
-              landmarks[PoseLandmark.LEFT_WRIST].y, landmarks[PoseLandmark.LEFT_WRIST].z]
-    RightShoulder = [landmarks[PoseLandmark.RIGHT_SHOULDER].x,
-                      landmarks[PoseLandmark.RIGHT_SHOULDER].y, landmarks[PoseLandmark.RIGHT_SHOULDER].z]
-    RightElbow = [landmarks[PoseLandmark.RIGHT_ELBOW].x,
-                  landmarks[PoseLandmark.RIGHT_ELBOW].y, landmarks[PoseLandmark.RIGHT_ELBOW].z]
-    RightWrist = [landmarks[PoseLandmark.RIGHT_WRIST].x,
-                  landmarks[PoseLandmark.RIGHT_WRIST].y, landmarks[PoseLandmark.RIGHT_WRIST].z]
-    LeftHip = [landmarks[PoseLandmark.LEFT_HIP].x,
-              landmarks[PoseLandmark.LEFT_HIP].y, landmarks[PoseLandmark.LEFT_HIP].z]
-    RightHip = [landmarks[PoseLandmark.RIGHT_HIP].x,
-                  landmarks[PoseLandmark.RIGHT_HIP].y, landmarks[PoseLandmark.RIGHT_HIP].z]
+  def pushup_preposition_check(self) -> bool:
+    checkNum = self.checkNum
+    results = self.tracker.get_result()
+
+    LeftShoulder = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.LEFT_SHOULDER)
+    LeftElbow = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.LEFT_ELBOW)
+    LeftWrist = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.LEFT_WRIST)
+    RightShoulder = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.RIGHT_SHOULDER)
+    RightElbow = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.RIGHT_ELBOW)
+    RightWrist = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.RIGHT_WRIST)
+    LeftHip = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.LEFT_HIP)
+    RightHip = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.RIGHT_HIP)
 
     # 양쪽 엉덩이 카메라 평행 맞추기
-    if checkNum == 0:
-      self.ready = "Take a position"
-      if -self.check > LeftHip[2] or LeftHip[2] > self.check or -self.check > RightHip[2] or RightHip[2] > self.check:
-        return False
-    elif checkNum == 1:
-      # 양쪽 손 평행 맞추기
-      self.ready = "hand"
-      if abs(LeftWrist[2] - RightWrist[2]) > self.check:
-        return False
-    elif checkNum == 2:
-      # 양쪽 어깨 손과 z 일치
-      self.ready = "shoulder"
-      if abs(LeftWrist[2] -LeftShoulder[2]) > self.check or abs(RightWrist[2] -RightShoulder[2]) > self.check:
-        return False
-    elif checkNum == 3:
-    # 양쪽 손에서 어깨까지 x 간격
-      if abs(LeftWrist[0] -LeftShoulder[0]) - abs(RightWrist[0] -RightShoulder[0]) > self.check:
-        self.ready = "hands width"
-        return False
-    elif checkNum == 4:
-    # 양쪽 어깨 y 값 일치
-      self.ready = "shoulder height"
-      if abs(LeftShoulder[1] -RightShoulder[1]) > self.check:
-        return False
-    # 팔꿈치 밖으로 돌아간지 확인
-    elif checkNum == 5:
-      self.ready = "elbow"
-      if abs(LeftElbow[0] - LeftWrist[0]) > self.check or abs(RightElbow[0] - RightWrist[0]) > self.check:
-        return False
-
-    return True
+    try:
+      if checkNum == 0:
+        self.ready = "Take a position"
+        if -self.check > LeftHip[2] or LeftHip[2] > self.check or -self.check > RightHip[2] or RightHip[2] > self.check:
+          return False
+      elif checkNum == 1:
+        # 양쪽 손 평행 맞추기
+        self.ready = "hand"
+        if abs(LeftWrist[2] - RightWrist[2]) > self.check:
+          return False
+      elif checkNum == 2:
+        # 양쪽 어깨 손과 z 일치
+        self.ready = "shoulder"
+        if abs(LeftWrist[2] -LeftShoulder[2]) > self.check or abs(RightWrist[2] -RightShoulder[2]) > self.check:
+          return False
+      elif checkNum == 3:
+      # 양쪽 손에서 어깨까지 x 간격
+        if abs(LeftWrist[0] -LeftShoulder[0]) - abs(RightWrist[0] -RightShoulder[0]) > self.check:
+          self.ready = "hands width"
+          return False
+      elif checkNum == 4:
+      # 양쪽 어깨 y 값 일치
+        self.ready = "shoulder height"
+        if abs(LeftShoulder[1] -RightShoulder[1]) > self.check:
+          return False
+      # 팔꿈치 밖으로 돌아간지 확인
+      elif checkNum == 5:
+        self.ready = "elbow"
+        if abs(LeftElbow[0] - LeftWrist[0]) > self.check or abs(RightElbow[0] - RightWrist[0]) > self.check:
+          return False
+      return True
+    except:
+      return False
 
   def squat_preposition_check(self, checkNum) -> bool:
 
@@ -280,74 +284,98 @@ class PoseChecker:
 
   def calc_pushup_count(self):
     global angle
+    print(self.stage)
     cam_landmark_results = self.tracker.get_result()
     if cam_landmark_results:
       angle = util.get_angel_from_symbol(cam_landmark_results, PoseLandmark.LEFT_SHOULDER,
                                              PoseLandmark.LEFT_ELBOW,
                                              PoseLandmark.LEFT_WRIST)
-    if angle < 180 and self.stage == None:
-      self.stage = 'down'
-    if angle < 110 and self.stage == 'down':
-      self.stage = 'up'
-    if angle > 170 and self.stage == 'up':
-      self.stage = None
-      self.counter += 1
+    try:
+      if angle < 180 and self.stage == None:
+        self.stage = 'down'
+      if angle < 110 and self.stage == 'down':
+        self.stage = 'up'
+      if angle > 170 and self.stage == 'up':
+        self.stage = None
+        self.user.up_count()
+        print(self.user.get_count())
+    except:
+      None
 
-  def pushup_position_check(self):
-    landmarks = self.tracker.get_result().pose_landmarks.landmark
-    LeftShoulder = [landmarks[PoseLandmark.LEFT_SHOULDER].x,
-                    landmarks[PoseLandmark.LEFT_SHOULDER].y, landmarks[PoseLandmark.LEFT_SHOULDER].z]
-    LeftElbow = [landmarks[PoseLandmark.LEFT_ELBOW].x,
-              landmarks[PoseLandmark.LEFT_ELBOW].y, landmarks[PoseLandmark.LEFT_ELBOW].z]
-    LeftWrist = [landmarks[PoseLandmark.LEFT_WRIST].x,
-              landmarks[PoseLandmark.LEFT_WRIST].y, landmarks[PoseLandmark.LEFT_WRIST].z]
-    RightShoulder = [landmarks[PoseLandmark.RIGHT_SHOULDER].x,
-                      landmarks[PoseLandmark.RIGHT_SHOULDER].y, landmarks[PoseLandmark.RIGHT_SHOULDER].z]
-    RightElbow = [landmarks[PoseLandmark.RIGHT_ELBOW].x,
-                  landmarks[PoseLandmark.RIGHT_ELBOW].y, landmarks[PoseLandmark.RIGHT_ELBOW].z]
-    RightWrist = [landmarks[PoseLandmark.RIGHT_WRIST].x,
-                  landmarks[PoseLandmark.RIGHT_WRIST].y, landmarks[PoseLandmark.RIGHT_WRIST].z]
-    LeftHip = [landmarks[PoseLandmark.LEFT_HIP].x,
-              landmarks[PoseLandmark.LEFT_HIP].y, landmarks[PoseLandmark.LEFT_HIP].z]
-    RightHip = [landmarks[PoseLandmark.RIGHT_HIP].x,
-                  landmarks[PoseLandmark.RIGHT_HIP].y, landmarks[PoseLandmark.RIGHT_HIP].z]
 
-    # 양쪽 엉덩이 카메라 평행 맞추기
-    if -self.check > LeftHip[2] or LeftHip[2] > self.check or -self.check > RightHip[2] or RightHip[2] > self.check:
-      self.wrong.append((23, 24))
-    # 양쪽 어깨 손과 z 일치
-    if abs(LeftWrist[2] -LeftShoulder[2]) > self.check:
-      self.wrong.append((11, 13))
-      self.wrong.append((13, 15))
-    if abs(RightWrist[2] -RightShoulder[2]) > self.check:
-      self.wrong.append((12, 14))
-      self.wrong.append((14, 16))
-    # 양쪽 어깨 y 값 일치
-    if abs(LeftShoulder[1] -RightShoulder[1]) > self.check:
-      self.wrong.append((11, 12))
-    # 팔꿈치 밖으로 돌아간지 확인
-    if abs(LeftElbow[0] - LeftWrist[0]) > self.check:
-      self.wrong.append((11, 13))
-    if abs(RightElbow[0] - RightWrist[0]) > self.check:
-      self.wrong.append((12, 14))
-    # 엉덩이 높이
-    return self.wrong
+  def check_before_pushup(self):
+    if self.checkNum < 6:
+      if not self.before_push_flag:
+        self.before_push_flag = self.pushup_preposition_check()
+      else:
+        self.checkNum += 1
+        self.before_push_flag = False
+        print(f"[Log]Pre Pose State Ready{self.ready}")
+        print(f"[Log]Pre Pose State CheckNum{self.checkNum}")
+    else:
+      self.is_pre_pose = True
 
-  def squat_position_check(self):
-    landmarks = self.tracker.get_result().pose_landmarks.landmark
-    LeftShoulder = [landmarks[PoseLandmark.LEFT_SHOULDER].x,
-                    landmarks[PoseLandmark.LEFT_SHOULDER].y, landmarks[PoseLandmark.LEFT_SHOULDER].z]
-    LeftElbow = [landmarks[PoseLandmark.LEFT_ELBOW].x,
-              landmarks[PoseLandmark.LEFT_ELBOW].y, landmarks[PoseLandmark.LEFT_ELBOW].z]
-    LeftWrist = [landmarks[PoseLandmark.LEFT_WRIST].x,
-              landmarks[PoseLandmark.LEFT_WRIST].y, landmarks[PoseLandmark.LEFT_WRIST].z]
-    RightShoulder = [landmarks[PoseLandmark.RIGHT_SHOULDER].x,
-                      landmarks[PoseLandmark.RIGHT_SHOULDER].y, landmarks[PoseLandmark.RIGHT_SHOULDER].z]
-    RightElbow = [landmarks[PoseLandmark.RIGHT_ELBOW].x,
-                  landmarks[PoseLandmark.RIGHT_ELBOW].y, landmarks[PoseLandmark.RIGHT_ELBOW].z]
-    RightWrist = [landmarks[PoseLandmark.RIGHT_WRIST].x,
-                  landmarks[PoseLandmark.RIGHT_WRIST].y, landmarks[PoseLandmark.RIGHT_WRIST].z]
-    LeftHip = [landmarks[PoseLandmark.LEFT_HIP].x,
-              landmarks[PoseLandmark.LEFT_HIP].y, landmarks[PoseLandmark.LEFT_HIP].z]
-    RightHip = [landmarks[PoseLandmark.RIGHT_HIP].x,
-                  landmarks[PoseLandmark.RIGHT_HIP].y, landmarks[PoseLandmark.RIGHT_HIP].z]
+
+  def is_ready_push_up(self):
+    return self.is_pre_pose
+
+
+  def check_wrong_push_up_pose(self):
+    results = self.tracker.get_result()
+
+    LeftShoulder = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.LEFT_SHOULDER)
+    LeftElbow = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.LEFT_ELBOW)
+    LeftWrist = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.LEFT_WRIST)
+    RightShoulder = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.RIGHT_SHOULDER)
+    RightElbow = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.RIGHT_ELBOW)
+    RightWrist = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.RIGHT_WRIST)
+    LeftHip = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.LEFT_HIP)
+    RightHip = util.get_one_landmark_by_PoseLandMark(results, PoseLandmark.RIGHT_HIP)
+
+    try:
+      # 양쪽 엉덩이 카메라 평행 맞추기
+      if -self.check > LeftHip[2] or LeftHip[2] > self.check or -self.check > RightHip[2] or RightHip[2] > self.check:
+        self.wrong_line.add((23, 24))
+      # 양쪽 어깨 손과 z 일치
+      if abs(LeftWrist[2] -LeftShoulder[2]) > self.check:
+        self.wrong_line.add((11, 13))
+        self.wrong_line.add((13, 15))
+      if abs(RightWrist[2] -RightShoulder[2]) > self.check:
+        self.wrong_line.add((12, 14))
+        self.wrong_line.add((14, 16))
+      # 양쪽 어깨 y 값 일치
+      if abs(LeftShoulder[1] -RightShoulder[1]) > self.check:
+        self.wrong_line.add((11, 12))
+      # 팔꿈치 밖으로 돌아간지 확인
+      if abs(LeftElbow[0] - LeftWrist[0]) > self.check:
+        self.wrong_line.add((11, 13))
+      if abs(RightElbow[0] - RightWrist[0]) > self.check:
+        self.wrong_line.add((12, 14))
+      # 엉덩이 높이
+    except:
+      None
+
+  def get_wrong_line(self):
+    return self.wrong_line
+
+  def clear_wrong_line(self):
+    self.wrong_line.clear()
+
+  # def squat_position_check(self):
+  #   landmarks = self.tracker.get_result().pose_landmarks.landmark
+  #   LeftShoulder = [landmarks[PoseLandmark.LEFT_SHOULDER].x,
+  #                   landmarks[PoseLandmark.LEFT_SHOULDER].y, landmarks[PoseLandmark.LEFT_SHOULDER].z]
+  #   LeftElbow = [landmarks[PoseLandmark.LEFT_ELBOW].x,
+  #             landmarks[PoseLandmark.LEFT_ELBOW].y, landmarks[PoseLandmark.LEFT_ELBOW].z]
+  #   LeftWrist = [landmarks[PoseLandmark.LEFT_WRIST].x,
+  #             landmarks[PoseLandmark.LEFT_WRIST].y, landmarks[PoseLandmark.LEFT_WRIST].z]
+  #   RightShoulder = [landmarks[PoseLandmark.RIGHT_SHOULDER].x,
+  #                     landmarks[PoseLandmark.RIGHT_SHOULDER].y, landmarks[PoseLandmark.RIGHT_SHOULDER].z]
+  #   RightElbow = [landmarks[PoseLandmark.RIGHT_ELBOW].x,
+  #                 landmarks[PoseLandmark.RIGHT_ELBOW].y, landmarks[PoseLandmark.RIGHT_ELBOW].z]
+  #   RightWrist = [landmarks[PoseLandmark.RIGHT_WRIST].x,
+  #                 landmarks[PoseLandmark.RIGHT_WRIST].y, landmarks[PoseLandmark.RIGHT_WRIST].z]
+  #   LeftHip = [landmarks[PoseLandmark.LEFT_HIP].x,
+  #             landmarks[PoseLandmark.LEFT_HIP].y, landmarks[PoseLandmark.LEFT_HIP].z]
+  #   RightHip = [landmarks[PoseLandmark.RIGHT_HIP].x,
+  #                 landmarks[PoseLandmark.RIGHT_HIP].y, landmarks[PoseLandmark.RIGHT_HIP].z]

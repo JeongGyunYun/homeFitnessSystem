@@ -27,3 +27,6 @@ class User:
 
   def clear_count(self):
     self.count = 0
+
+  def up_count(self):
+    self.count += 1

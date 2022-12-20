@@ -104,3 +104,8 @@ def json_load(filename, path="./static/sampleDB/"):
   with open(full_path) as json_file:
     data = json.load(json_file)
   return data
+
+def get_one_landmark_by_PoseLandMark(results, poseLandmarkType: PoseLandmark):
+  if results.pose_landmarks:
+    base = results.pose_landmarks.landmark[poseLandmarkType]
+    return [base.x, base.y, base.z]

@@ -4,6 +4,7 @@ from mediapipe.python.solutions.drawing_utils import DrawingSpec
 
 RED_COLOR = (0, 0, 255)
 GREEN_COLOR = (0, 128, 0)
+ORANGE_COLOR = (255, 127, 0)
 
 
 class Annotation:
@@ -24,13 +25,19 @@ class Annotation:
     for connection in self.pose_connections:
       self.pose_landmark_style[connection] = DrawingSpec(color=GREEN_COLOR)
 
-  def make_connection_style_from_results(self, results):
+  def make_connection_style_from_results(self, wrong_pose ,async_pose):
     self.set_default_connection_style()
-    for result in results:
+    for result in async_pose:
+      self.set_connection_orange(result)
+    for result in wrong_pose:
       self.set_connection_red(result)
+
 
   def set_connection_red(self, result: Tuple[int, int]):
       self.pose_landmark_style[result] = DrawingSpec(color=RED_COLOR)
+
+  def set_connection_orange(self, result: Tuple[int, int]):
+      self.pose_landmark_style[result] = DrawingSpec(color=ORANGE_COLOR)
 
   def make_connection_style_from_result(self, result: Tuple[int, int] = None):
     self.set_default_connection_style()

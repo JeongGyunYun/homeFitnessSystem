@@ -3,7 +3,7 @@ import os
 
 class VideoController:
   def __init__(self):
-    self.control_flag:bool = True
+    self.control_flag: bool = False
     self.max_loop_count = 1
 
   def set_video(self, video):
@@ -24,7 +24,7 @@ class VideoController:
     self.cur_loop_count = 1
 
   def set_frame_to_start(self):
-    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+    self.cap.set(cv2.CAP_PROP_POS_FRAMES, 1)
 
   def count_loop(self):
     self.cur_loop_count += 1
@@ -38,7 +38,7 @@ class VideoController:
     self.status = None
     self.frame = None
     self.frame_no = None
-    self.control_flag = True
+    self.control_flag = False
 
   def load_on_frame(self):
     self.status, self.frame = self.cap.read()

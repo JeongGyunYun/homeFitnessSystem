@@ -19,7 +19,7 @@ $(function (){
     bars.each(function(){
       num = count.text()
       if(num <= goal){
-        count.text(num)
+        // count.text(num)
         $(this).css({
           height : num / goal * 100 + "%"
         })

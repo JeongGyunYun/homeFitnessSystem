@@ -36,3 +36,9 @@ class UserManage:
   @staticmethod
   def get_user_list():
     return user_list
+
+  @staticmethod
+  def is_user_in_user_list(username):
+    if username in user_list.keys():
+      return True
+    return False

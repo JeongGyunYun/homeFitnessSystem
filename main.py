@@ -38,10 +38,13 @@ def clear_session():
 
 @app.route('/pre_pushup')
 def pre_pushup():
+  if 'username' in session and UserManage.is_user_in_user_list(session['username']):
     username = session['username']
     user = UserManage.get_User_from_username(username)
     user.set_train_push_up()
     return render_template('pre_pushup.html')
+  else:
+    return redirect(url_for('check_session'))
   
 @app.route('/pre_squat')
 def pre_squat():
@@ -52,10 +55,13 @@ def pre_squat():
   
 @app.route('/pushup', methods=['GET', 'POST'])
 def pushup():
+  if 'username' in session and UserManage.is_user_in_user_list(session['username']):
     if request.method == 'POST':
       count = request.form['reps']
       print(count)
     return render_template('pushup.html', value=count)
+  else:
+    return redirect(url_for('check_session'))
 
 
 @app.route('/squat', methods=['GET', 'POST'])
@@ -70,10 +76,13 @@ def squat():
 # def index():
 #   return render_template("index.html")
 def main():
-  username = session['username']
-  user = UserManage.get_User_from_username(username)
-  user.clear_count()
-  return render_template("main.html")
+  if 'username' in session and UserManage.is_user_in_user_list(session['username']):
+    username = session['username']
+    user = UserManage.get_User_from_username(username)
+    user.clear_count()
+    return render_template("main.html")
+  else:
+    return redirect(url_for('check_session'))
 
 
 @app.route('/data_feed')
