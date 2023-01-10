@@ -18,7 +18,7 @@ class PoseChecker:
     self.checkNum = 0
     self.async_line = set()
     self.ready = None
-    self.check = .05
+    self.check = .75
     self.counter = 0
     self.stage = None
     self.wrong_line = set()

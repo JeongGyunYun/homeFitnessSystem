@@ -13,13 +13,10 @@ $(function (){
     //         })
     cnum = parseInt(count.text())
     bars.each(function(){
-      if(cnum <= gnum){
-        // count.text(num)
-        $(this).css({
+      $(this).css({
           height : cnum / gnum * 100 + "%"
         })
-      }
-      else{
+      if(cnum === gnum){
         clearInterval(clear);
         $("#clear").css('visibility', 'visible');
         $('.sample_video').trigger('pause');

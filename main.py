@@ -16,8 +16,10 @@ app.secret_key = "Hello World"
 def check_session():
   value = "hello"
   session['username'] = value
-  UserManage.add_user(value, User(value), Tracker(dev_info=0))
+  UserManage.add_user(value, User(value),
+                      Tracker(dev_info=0))
   return redirect(url_for('main'))
+
   # if "username" in session:
   #   return jsonify(f"Name is {session['username']}")
   # else:
@@ -73,10 +75,9 @@ def squat():
 
 
 @app.route('/home')
-# def index():
-#   return render_template("index.html")
 def main():
-  if 'username' in session and UserManage.is_user_in_user_list(session['username']):
+  if 'username' in session and\
+      UserManage.is_user_in_user_list(session['username']):
     username = session['username']
     user = UserManage.get_User_from_username(username)
     user.clear_count()
