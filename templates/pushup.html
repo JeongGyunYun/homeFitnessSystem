@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home Fitness Training System</title>
+  <link rel="stylesheet" href="{{url_for('static', filename='CSS/styles.css')}}">
+  <script src="https://code.jquery.com/jquery-3.6.2.min.js"></script>
+  <script type=text/javascript src="{{ url_for('static', filename='JS/scripts.js') }}"></script>
+</head>
+<body>
+  <div class="mobile-contaier">
+    <div class="head"></div>
+    <div class="oEUMCt"></div>
+    <div class="mobile-view">
+    <div id="clear">CLEAR</div>
+      <div id="ready">READY</div>
+      <div id="counting_area">
+        <div class="num" id="goal">{{value}}</div>
+        <div class="bar"></div>
+        <div class="num" id="count">0</div>
+      </div>
+      <img class="my_video" src="{{ url_for('camera_feed')}}">
+      <img class="sample_video" src="{{ url_for('video_feed', filename='sam4.mp4', count=50)}}" width="50%">
+    </div>
+    <div class="tail"></div>
+</div>
+</body>
+<script>
+  var count = document.getElementById("count");
+  setInterval(() => {
+        fetch("{{ url_for('data_feed') }}")
+            .then(response => {
+                response.text().then(data => {
+                    count.innerText = data
+                });
+            })
+    }, 500);
+
+  var ready = setInterval(function(){
+    fetch("{{ url_for('ready_data_feed') }}")
+            .then(response => {
+                response.text().then(data => {
+                  if(data === "True"){
+                    $("#ready").css('visibility', 'hidden')
+                    clearInterval(ready)
+                  }
+                });
+            })
+  })
+</script>
+</html>

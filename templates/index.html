@@ -5,6 +5,25 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Multiple Live Streaming</title>
+    <script>
+        function request_play_video() {
+            fetch("{{url_for('video_play')}}")
+                .then(res => {
+                    res.text().then(data => {
+                        console.log(data)
+                    })
+                })
+        }
+
+        function request_stop_video() {
+            fetch("{{url_for('video_stop')}}")
+                .then(res => {
+                    res.text().then(data => {
+                        console.log(data)
+                    })
+                })
+        }
+    </script>
 </head>
 <body>
 <div class="container">
@@ -12,12 +31,11 @@
 
         <div class="col-lg-7">
             <h3 class="mt-5">Multiple Live Streaming</h3>
-            <img src="{{ url_for('video_feed', dev='0')}}" width="50%">
-            <img src="{{ url_for('video_feed', dev='sam1.mov')}}" width="50%">
+            <img src="{{ url_for('camera_feed')}}" width="50%">
+            <img src="{{ url_for('video_feed', filename='sam2.mp4', count=5)}}" width="50%">
         </div>
-
-
-
+        <button id="playBtn" onclick="request_play_video();">PlayPlayPlayPlayPlayPlay</button>
+        <button id="stopBtn" onclick="request_stop_video();">StopStopStopStopStopStop</button>
     </div>
 </div>
 </body>
